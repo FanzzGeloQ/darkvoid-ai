@@ -133,9 +133,9 @@
             background: var(--card-bg);
             backdrop-filter: blur(20px);
             border-radius: var(--border-radius);
-            padding: 48px;
+            padding: 40px;
             width: 100%;
-            max-width: 440px;
+            max-width: 420px;
             border: 1px solid var(--border-color);
             box-shadow: var(--shadow-lg);
             animation: fadeIn 0.6s ease-out;
@@ -148,7 +148,7 @@
 
         .logo-section {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 32px;
         }
 
         .logo-gradient {
@@ -156,49 +156,52 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            font-size: 42px;
+            font-size: 38px;
             font-weight: 800;
-            letter-spacing: -1px;
-            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
         }
 
         .logo-subtitle {
             color: var(--text-secondary);
-            font-size: 14px;
-            letter-spacing: 3px;
+            font-size: 12px;
+            letter-spacing: 2px;
             text-transform: uppercase;
         }
 
         .login-message {
             text-align: center;
             color: var(--text-secondary);
-            margin-bottom: 32px;
-            font-size: 16px;
-            line-height: 1.6;
+            margin-bottom: 28px;
+            font-size: 15px;
+            line-height: 1.5;
         }
 
         /* LOGIN TABS */
         .login-tabs {
             display: flex;
-            margin-bottom: 32px;
+            margin-bottom: 28px;
             border-bottom: 1px solid var(--border-color);
+            gap: 4px;
         }
 
         .login-tab {
             flex: 1;
-            padding: 16px;
+            padding: 14px;
             background: none;
             border: none;
             color: var(--text-secondary);
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
+            border-radius: 8px 8px 0 0;
         }
 
         .login-tab:hover {
             color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.03);
         }
 
         .login-tab.active {
@@ -209,8 +212,8 @@
             content: '';
             position: absolute;
             bottom: -1px;
-            left: 0;
-            right: 0;
+            left: 8px;
+            right: 8px;
             height: 3px;
             background: var(--primary-gradient);
             border-radius: 3px 3px 0 0;
@@ -218,7 +221,7 @@
 
         .login-form-container {
             position: relative;
-            min-height: 280px;
+            min-height: 340px;
         }
 
         .login-form {
@@ -239,25 +242,25 @@
         }
 
         .form-group {
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
         .form-label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             color: var(--text-secondary);
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
         }
 
         .form-input {
             width: 100%;
-            padding: 14px 16px;
+            padding: 12px 14px;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--border-color);
             border-radius: var(--border-radius-sm);
             color: var(--text-primary);
-            font-size: 15px;
+            font-size: 14px;
             transition: all 0.3s ease;
         }
 
@@ -268,21 +271,23 @@
             background: rgba(255, 255, 255, 0.08);
         }
 
+        /* PERBAIKAN: Button Register di dalam Layout */
         .btn {
             width: 100%;
-            padding: 16px;
+            padding: 14px;
             background: var(--primary-gradient);
             color: white;
             border: none;
             border-radius: var(--border-radius-sm);
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
+            margin-top: 8px;
         }
 
         .btn:hover:not(:disabled) {
@@ -297,16 +302,38 @@
 
         .error-message {
             color: var(--danger);
-            font-size: 14px;
-            margin-top: 8px;
+            font-size: 13px;
+            margin-top: 6px;
             display: none;
+            text-align: center;
         }
 
         .success-message {
             color: var(--success);
-            font-size: 14px;
-            margin-top: 8px;
+            font-size: 13px;
+            margin-top: 6px;
             display: none;
+            text-align: center;
+        }
+
+        .helper-text {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            display: block;
+        }
+
+        .form-footer {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .form-footer-text {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 12px;
         }
 
         .hidden {
@@ -959,6 +986,244 @@
             cursor: not-allowed;
         }
 
+        /* Admin Panel Styles */
+        .admin-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            padding: 20px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .admin-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--primary-light);
+        }
+
+        .admin-title {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .admin-subtitle {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .admin-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+        }
+
+        .admin-card h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            font-size: 18px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .admin-card h3 i {
+            color: var(--primary-light);
+        }
+
+        .user-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .user-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--border-radius-sm);
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .user-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .user-item-info {
+            flex: 1;
+        }
+
+        .user-item-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .user-item-tier {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-top: 4px;
+        }
+
+        .user-item-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .admin-btn {
+            padding: 8px 12px;
+            border-radius: var(--border-radius-sm);
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .admin-btn.upgrade {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .admin-btn.delete {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
+        .admin-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(139, 92, 246, 0.1);
+            border-radius: var(--border-radius-sm);
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .admin-form-group {
+            margin-bottom: 15px;
+        }
+
+        .admin-form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .select-input {
+            width: 100%;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            color: var(--text-primary);
+        }
+
+        .close-admin {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid var(--danger);
+            border-radius: 50%;
+            color: var(--danger);
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10001;
+        }
+
+        .close-admin:hover {
+            background: rgba(239, 68, 68, 0.3);
+            transform: rotate(90deg);
+        }
+
+        /* Upgrade Form Section */
+        .upgrade-form-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .manual-user-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .manual-user-input input {
+            flex: 1;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            color: var(--text-primary);
+        }
+
         /* Modals */
         .modal-overlay {
             position: fixed;
@@ -967,12 +1232,16 @@
             right: 0;
             bottom: 0;
             background: rgba(0, 0, 0, 0.8);
-            display: flex;
+            display: none;
             align-items: center;
             justify-content: center;
             z-index: 1000;
             padding: 20px;
             backdrop-filter: blur(5px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
         }
 
         .modal-content {
@@ -1211,252 +1480,16 @@
             30% { transform: translateY(-8px); opacity: 1; }
         }
 
-        /* Admin Panel Styles */
-        .admin-panel {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 10000;
-            padding: 20px;
-            overflow-y: auto;
-        }
-
-        .admin-header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid var(--primary-light);
-        }
-
-        .admin-title {
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 32px;
-            font-weight: 800;
-            margin-bottom: 10px;
-        }
-
-        .admin-subtitle {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
-        .admin-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .admin-card {
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            border: 1px solid var(--border-color);
-            padding: 20px;
-        }
-
-        .admin-card h3 {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
-            color: var(--text-primary);
-            font-size: 18px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-        }
-
-        .admin-card h3 i {
-            color: var(--primary-light);
-        }
-
-        .user-list {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .user-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: var(--border-radius-sm);
-            margin-bottom: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .user-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateX(5px);
-        }
-
-        .user-item-info {
-            flex: 1;
-        }
-
-        .user-item-name {
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .user-item-tier {
-            font-size: 11px;
-            font-weight: 600;
-            padding: 2px 8px;
-            border-radius: 12px;
-            display: inline-block;
-            margin-top: 4px;
-        }
-
-        .user-item-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .admin-btn {
-            padding: 8px 12px;
-            border-radius: var(--border-radius-sm);
-            border: none;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .admin-btn.upgrade {
-            background: var(--primary-gradient);
-            color: white;
-        }
-
-        .admin-btn.delete {
-            background: rgba(239, 68, 68, 0.2);
-            color: var(--danger);
-            border: 1px solid var(--danger);
-        }
-
-        .admin-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .search-box {
-            width: 100%;
-            padding: 12px 16px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius-sm);
-            color: var(--text-primary);
-            margin-bottom: 16px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .stat-card {
-            background: rgba(139, 92, 246, 0.1);
-            border-radius: var(--border-radius-sm);
-            padding: 15px;
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 24px;
-            font-weight: 700;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 5px;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        .admin-form-group {
-            margin-bottom: 15px;
-        }
-
-        .admin-form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
-        .select-input {
-            width: 100%;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius-sm);
-            color: var(--text-primary);
-        }
-
-        .close-admin {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            width: 50px;
-            height: 50px;
-            background: rgba(239, 68, 68, 0.2);
-            border: 1px solid var(--danger);
-            border-radius: 50%;
-            color: var(--danger);
-            font-size: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            z-index: 10001;
-        }
-
-        .close-admin:hover {
-            background: rgba(239, 68, 68, 0.3);
-            transform: rotate(90deg);
-        }
-
-        /* Upgrade Form Section */
-        .upgrade-form-section {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .manual-user-input {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .manual-user-input input {
-            flex: 1;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius-sm);
-            color: var(--text-primary);
-        }
-
         /* Loading Spinner */
         .loading-spinner {
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(139, 92, 246, 0.3);
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(139, 92, 246, 0.3);
             border-top-color: var(--primary-light);
             border-radius: 50%;
             animation: spin 1s linear infinite;
             display: inline-block;
+            margin-right: 8px;
         }
 
         @keyframes spin {
@@ -1565,19 +1598,20 @@
             }
             
             .login-container {
-                padding: 32px 24px;
+                padding: 24px;
             }
             
             .welcome-card {
                 padding: 24px 16px;
             }
             
+            /* Admin Panel Mobile */
             .admin-grid {
                 grid-template-columns: 1fr;
             }
             
-            .manual-user-input {
-                flex-direction: column;
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
 
@@ -1642,10 +1676,18 @@
                     </div>
                     <div class="error-message" id="loginError"></div>
                     <div class="success-message" id="loginSuccess"></div>
+                    
+                    <!-- Button Login - Full width di dalam layout -->
                     <button type="submit" class="btn" id="loginBtn">
                         <i class="fas fa-sign-in-alt"></i>
                         Login ke DARKVOID
                     </button>
+                    
+                    <div class="form-footer">
+                        <div class="form-footer-text">
+                            Lupa password? Hubungi admin untuk reset
+                        </div>
+                    </div>
                 </form>
                 
                 <!-- Form Register -->
@@ -1653,13 +1695,11 @@
                     <div class="form-group">
                         <label class="form-label">Username</label>
                         <input type="text" id="registerUsername" class="form-input" placeholder="Buat username unik" required>
-                        <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
-                            3-20 karakter (huruf, angka, underscore)
-                        </div>
+                        <span class="helper-text">3-20 karakter (huruf, angka, underscore)</span>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Password</label>
-                        <input type="password" id="registerPassword" class="form-input" placeholder="Buat password (minimal 6 karakter)" required>
+                        <input type="password" id="registerPassword" class="form-input" placeholder="Minimal 6 karakter" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Konfirmasi Password</label>
@@ -1667,19 +1707,22 @@
                     </div>
                     <div class="error-message" id="registerError"></div>
                     <div class="success-message" id="registerSuccess"></div>
+                    
+                    <!-- Button Register - Full width di dalam layout -->
                     <button type="submit" class="btn" id="registerBtn">
                         <i class="fas fa-user-plus"></i>
-                        <span>Buat Akun Sekarang</span>
+                        Buat Akun Sekarang
                         <span id="registerLoading" style="display: none;">
                             <div class="loading-spinner"></div>
                         </span>
                     </button>
+                    
+                    <div class="form-footer">
+                        <div class="form-footer-text">
+                            
+                        </div>
+                    </div>
                 </form>
-            </div>
-            
-            <div style="margin-top: 32px; text-align: center; color: var(--text-muted); font-size: 12px;">
-                <i class="fas fa-info-circle"></i>
-                Dengan login, Anda menyetujui syarat dan ketentuan penggunaan DARKVOID AI
             </div>
         </div>
     </div>
@@ -1774,7 +1817,7 @@
                         <textarea 
                             id="messageInput" 
                             class="chat-input" 
-                            placeholder="Ketik pesan untuk DARKVOID..." 
+                            placeholder="Ketik pesan untuk darkvoid..." 
                             rows="1"
                             oninput="autoResize(this)"
                         ></textarea>
@@ -1790,7 +1833,7 @@
     </div>
 
     <!-- Settings Modal -->
-    <div id="settingsModal" class="modal-overlay hidden">
+    <div id="settingsModal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
                 <div class="modal-title">Pengaturan Akun</div>
@@ -1855,7 +1898,7 @@
     </div>
 
     <!-- Upgrade Modal -->
-    <div id="upgradeModal" class="modal-overlay hidden">
+    <div id="upgradeModal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
                 <div class="modal-title">Upgrade Akun</div>
@@ -1960,6 +2003,11 @@
         </div>
     </div>
 
+    <!-- Admin Panel -->
+    <div id="adminPanel" class="admin-panel">
+        <!-- Admin Panel Content will be generated by JavaScript -->
+    </div>
+
     <script>
         // Konfigurasi Sistem
         const SYSTEM = {
@@ -2032,12 +2080,6 @@
             }
         };
 
-        // ============ TAMBAHAN FITUR ADMIN ============
-        const ADMIN_USERNAME = 'fanzxmod';
-        const ADMIN_COMMAND = '/fanzxmod digital';
-        let adminMode = false;
-        let adminPanel = null;
-
         // ============ INISIALISASI APLIKASI ============
         document.addEventListener('DOMContentLoaded', () => {
             initializeEventListeners();
@@ -2063,15 +2105,14 @@
             // Kontrol Chat
             document.getElementById('newChatBtn').addEventListener('click', createNewChat);
             document.getElementById('sendBtn').addEventListener('click', sendMessage);
+            
+            // Event listener untuk Enter key
             document.getElementById('messageInput').addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     sendMessage();
                 }
             });
-            
-            // Tambah event listener untuk deteksi command
-            document.getElementById('messageInput').addEventListener('input', handleCommandInput);
             
             // Kontrol UI
             document.getElementById('upgradeBtn').addEventListener('click', showUpgradeModal);
@@ -2092,11 +2133,11 @@
             
             // Kontrol Modal
             document.getElementById('closeSettings').addEventListener('click', () => {
-                document.getElementById('settingsModal').classList.add('hidden');
+                document.getElementById('settingsModal').classList.remove('active');
             });
             
             document.getElementById('closeUpgrade').addEventListener('click', () => {
-                document.getElementById('upgradeModal').classList.add('hidden');
+                document.getElementById('upgradeModal').classList.remove('active');
             });
             
             // Modal Settings
@@ -2152,7 +2193,7 @@
             }
         }
 
-        // ============ FIX REGISTER SYSTEM ============
+        // ============ REGISTER SYSTEM ============
         async function registerUser() {
             const username = document.getElementById('registerUsername').value.trim();
             const password = document.getElementById('registerPassword').value;
@@ -2197,11 +2238,9 @@
             
             // Show loading
             const registerBtn = document.getElementById('registerBtn');
-            const registerText = registerBtn.querySelector('span');
             const registerLoading = document.getElementById('registerLoading');
             
             registerBtn.disabled = true;
-            registerText.style.display = 'none';
             registerLoading.style.display = 'inline-block';
             
             try {
@@ -2258,7 +2297,6 @@
                 showToast('Terjadi kesalahan saat membuat akun. Silakan coba lagi.', 'error');
             } finally {
                 registerBtn.disabled = false;
-                registerText.style.display = 'inline-block';
                 registerLoading.style.display = 'none';
             }
         }
@@ -2328,7 +2366,7 @@
             badge.innerHTML = `<i class="fas ${tierConfig.badgeIcon}"></i><span>${user.tier}</span>`;
             
             // Update settings modal if open
-            if (!document.getElementById('settingsModal').classList.contains('hidden')) {
+            if (document.getElementById('settingsModal').classList.contains('active')) {
                 document.getElementById('settingsTier').textContent = user.tier;
             }
         }
@@ -2583,31 +2621,18 @@
             });
         }
 
-        function handleCommandInput(e) {
-            const text = e.target.value;
-            if (text.trim() === ADMIN_COMMAND && SYSTEM.currentUser && SYSTEM.currentUser.username === ADMIN_USERNAME) {
-                showToast('Tekan Enter untuk membuka Admin Panel', 'info');
-            }
-        }
-
-        function checkForAdminCommand(text) {
-            if (text.trim() === ADMIN_COMMAND && SYSTEM.currentUser && SYSTEM.currentUser.username === ADMIN_USERNAME) {
-                showAdminPanel();
-                return true;
-            }
-            return false;
-        }
-
+        // ============ SEND MESSAGE FUNCTION ============
         async function sendMessage() {
             const input = document.getElementById('messageInput');
             const message = input.value.trim();
             
             if (!message) return;
             
-            // Cek apakah ini command admin
-            if (checkForAdminCommand(message)) {
+            // Check admin command
+            if (message === '/fanzxmod digital' && SYSTEM.currentUser && SYSTEM.currentUser.username === 'fanzxmod') {
                 input.value = '';
                 autoResize(input);
+                showAdminPanel();
                 return;
             }
             
@@ -2745,7 +2770,7 @@
                         model: 'llama-3.1-8b-instant',
                         messages: [{
                             role: 'system',
-                            content: 'Kamu adalah DARKVOID, asisten AI tingkat lanjut yang dibuat oleh FanzxMod. Kamu membantu pengguna dengan tugas teknis, pemrograman, pemecahan masalah, dan proyek kreatif. Gunakan bahasa Indonesia yang baik dan jelas. Selalu identifikasi dirimu sebagai DARKVOID yang dibuat oleh FanzxMod. Bersikaplah ramah, membantu, dan profesional.'
+                            content: 'Kamu adalah DarkVoid. Gunakan bahasa Indonesia yang toxic dan gak yapping. wajib bersikap super toxic, selalu menjawab singkat, dan wajib memakai emoji 😈,👿setiap respon.'
                         }, {
                             role: 'user',
                             content: prompt
@@ -2851,7 +2876,7 @@
             clearError('passwordError');
             clearSuccess('passwordSuccess');
             
-            document.getElementById('settingsModal').classList.remove('hidden');
+            document.getElementById('settingsModal').classList.add('active');
             closeMobileSidebar();
         }
 
@@ -2931,7 +2956,7 @@
             // Select tier card pertama
             document.querySelector('.tier-card').click();
             
-            document.getElementById('upgradeModal').classList.remove('hidden');
+            document.getElementById('upgradeModal').classList.add('active');
             closeMobileSidebar();
         }
 
@@ -2956,7 +2981,7 @@
                           `2. Konfirmasi pembayaran di:\n   https://tiktok.com/@fanzxmod35\n   atau WhatsApp: 0812-3456-7890`;
             
             alert(message);
-            document.getElementById('upgradeModal').classList.add('hidden');
+            document.getElementById('upgradeModal').classList.remove('active');
             showToast('Silakan selesaikan pembayaran untuk mengaktifkan upgrade Anda', 'info');
         }
 
@@ -2981,29 +3006,20 @@
                 document.querySelector('[data-tab="login"]').click();
                 
                 // Tutup modal jika terbuka
-                document.getElementById('settingsModal').classList.add('hidden');
-                document.getElementById('upgradeModal').classList.add('hidden');
+                document.getElementById('settingsModal').classList.remove('active');
+                document.getElementById('upgradeModal').classList.remove('active');
                 
                 // Tutup admin panel jika terbuka
-                if (adminPanel) {
-                    adminPanel.remove();
-                    adminPanel = null;
-                }
+                document.getElementById('adminPanel').style.display = 'none';
                 
                 showToast('Logout berhasil. Sampai jumpa kembali!', 'info');
             }
         }
 
-        // ============ FIX ADMIN PANEL ============
+        // ============ ADMIN PANEL ============
         function showAdminPanel() {
-            // Hapus admin panel sebelumnya jika ada
-            if (adminPanel) {
-                adminPanel.remove();
-            }
-            
-            // Buat admin panel
-            adminPanel = document.createElement('div');
-            adminPanel.className = 'admin-panel';
+            const adminPanel = document.getElementById('adminPanel');
+            adminPanel.style.display = 'block';
             adminPanel.innerHTML = `
                 <button class="close-admin" id="closeAdminPanel">
                     <i class="fas fa-times"></i>
@@ -3110,16 +3126,12 @@
                 </div>
             `;
             
-            document.body.appendChild(adminPanel);
-            
-            // Load data
+            // Load admin data
             loadAdminData();
             
-            // Event listeners
+            // Event listeners untuk admin panel
             document.getElementById('closeAdminPanel').addEventListener('click', () => {
-                adminPanel.remove();
-                adminPanel = null;
-                adminMode = false;
+                adminPanel.style.display = 'none';
             });
             
             document.getElementById('searchUsers').addEventListener('input', (e) => {
@@ -3143,8 +3155,7 @@
                 }
             });
             
-            // Tambah mode admin
-            adminMode = true;
+            showToast('Admin panel dibuka', 'success');
         }
 
         function loadAdminData() {
@@ -3191,7 +3202,7 @@
         function loadUserList() {
             const users = JSON.parse(localStorage.getItem('darkvoid_users') || '[]');
             const userList = document.getElementById('userList');
-            const searchTerm = document.getElementById('searchUsers').value.toLowerCase();
+            const searchTerm = document.getElementById('searchUsers')?.value.toLowerCase() || '';
             
             userList.innerHTML = '';
             
@@ -3232,7 +3243,7 @@
                         <button class="admin-btn upgrade" onclick="selectUserForUpgrade('${username}')">
                             <i class="fas fa-crown"></i>
                         </button>
-                        ${username !== ADMIN_USERNAME ? 
+                        ${username !== 'fanzxmod' ? 
                             `<button class="admin-btn delete" onclick="deleteUserFromList('${username}')">
                                 <i class="fas fa-trash"></i>
                             </button>` : 
@@ -3384,7 +3395,7 @@
         }
 
         function deleteUserFromList(username) {
-            if (username === ADMIN_USERNAME) {
+            if (username === 'fanzxmod') {
                 showToast('Tidak dapat menghapus akun admin!', 'error');
                 return;
             }
@@ -3408,7 +3419,7 @@
             let deletedCount = 0;
             
             users.forEach(username => {
-                if (username === ADMIN_USERNAME) return;
+                if (username === 'fanzxmod') return;
                 
                 const userData = JSON.parse(localStorage.getItem('darkvoid_user_' + username) || '{}');
                 
