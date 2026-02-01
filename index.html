@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DARKVOID AI</title>
+    <title>XENO-GPT</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -14,25 +14,27 @@
         }
 
         :root {
-            --primary-gradient: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
-            --primary-light: #A855F7;
-            --dark-bg: #0F0F23;
-            --darker-bg: #0A0A18;
-            --card-bg: rgba(30, 30, 46, 0.95);
-            --sidebar-bg: rgba(20, 20, 35, 0.98);
+            --primary-gradient: linear-gradient(135deg, #FF4757 0%, #DC3545 100%);
+            --primary-light: #FF6B81;
+            --primary-dark: #C82333;
+            --dark-bg: #0A0A0A;
+            --darker-bg: #050505;
+            --card-bg: rgba(20, 20, 20, 0.95);
+            --sidebar-bg: rgba(15, 15, 15, 0.98);
             --text-primary: #FFFFFF;
-            --text-secondary: #B0B0CC;
-            --text-muted: #8888AA;
-            --border-color: rgba(139, 92, 246, 0.3);
-            --hover-bg: rgba(139, 92, 246, 0.15);
-            --success: #10B981;
-            --warning: #F59E0B;
-            --danger: #EF4444;
-            --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.5);
-            --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.3);
+            --text-secondary: #CCCCCC;
+            --text-muted: #999999;
+            --border-color: rgba(255, 71, 87, 0.3);
+            --hover-bg: rgba(255, 71, 87, 0.15);
+            --success: #28A745;
+            --warning: #FFC107;
+            --danger: #DC3545;
+            --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.7);
+            --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.5);
             --border-radius: 16px;
             --border-radius-sm: 12px;
             --glass-bg: rgba(255, 255, 255, 0.05);
+            --neon-red: #ff2b2b;
         }
 
         body {
@@ -41,6 +43,409 @@
             height: 100vh;
             overflow: hidden;
         }
+
+        /* ============ AI MODE SELECTOR STYLES ============ */
+        .ai-mode-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgba(255, 43, 43, 0.1);
+            border: 1px solid #ff2b2b;
+            color: #ff2b2b;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .ai-mode-btn:hover {
+            background: rgba(255, 43, 43, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(255, 43, 43, 0.4);
+        }
+
+        .mode-indicator {
+            font-size: 10px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            text-align: center;
+            font-weight: 500;
+            margin-top: 2px;
+        }
+
+        /* Modal Mode Selector */
+        .mode-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .mode-modal-overlay.active {
+            display: flex;
+        }
+
+        .mode-modal-content {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 0 40px rgba(255, 43, 43, 0.3);
+            animation: slideInUp 0.3s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .mode-modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(255, 43, 43, 0.1), transparent);
+        }
+
+        .mode-modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #ff2b2b, #ff6b81);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .mode-modal-subtitle {
+            color: var(--text-secondary);
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .mode-modal-close {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 4px;
+            line-height: 1;
+            transition: all 0.3s ease;
+        }
+
+        .mode-modal-close:hover {
+            color: #ff2b2b;
+            transform: rotate(90deg);
+        }
+
+        .mode-modal-body {
+            padding: 24px;
+        }
+
+        /* Mode Cards Grid */
+        .mode-cards-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .mode-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 43, 43, 0.2);
+            border-radius: var(--border-radius);
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mode-card:hover {
+            background: rgba(255, 43, 43, 0.05);
+            border-color: rgba(255, 43, 43, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .mode-card.selected {
+            background: rgba(255, 43, 43, 0.1);
+            border-color: #ff2b2b;
+            box-shadow: 0 0 20px rgba(255, 43, 43, 0.2);
+        }
+
+        .mode-card.locked {
+            cursor: not-allowed;
+            opacity: 0.6;
+            filter: grayscale(0.5);
+        }
+
+        .mode-card.locked:hover {
+            transform: none;
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 43, 43, 0.2);
+        }
+
+        .mode-card-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .mode-card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgba(255, 43, 43, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .mode-card-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .mode-card-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .mode-card-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .mode-badge {
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-default {
+            background: rgba(255, 107, 129, 0.2);
+            color: #ff6b81;
+            border: 1px solid #ff6b81;
+        }
+
+        .badge-pro {
+            background: rgba(255, 193, 7, 0.2);
+            color: #FFC107;
+            border: 1px solid #FFC107;
+        }
+
+        .badge-locked {
+            background: rgba(108, 117, 125, 0.2);
+            color: #6c757d;
+            border: 1px solid #6c757d;
+        }
+
+        .mode-card-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .mode-card-check {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            color: #ff2b2b;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .mode-card.selected .mode-card-check {
+            opacity: 1;
+        }
+
+        /* Badge PRO ONLY */
+        .pro-only-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255, 193, 7, 0.1);
+            color: #FFC107;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 8px;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .upgrade-btn {
+            background: linear-gradient(135deg, #FFC107, #FF9800);
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .upgrade-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
+        }
+
+        /* Mode Footer */
+        .mode-modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .current-mode-info {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .current-mode-name {
+            color: #ff2b2b;
+            font-weight: 600;
+        }
+
+        /* ============ CODE BLOCK STYLES ============ */
+        .code-block {
+            position: relative;
+            margin: 16px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #1e1e1e;
+            border: 1px solid rgba(255, 71, 87, 0.3);
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            background: rgba(30, 30, 30, 0.9);
+            border-bottom: 1px solid rgba(255, 71, 87, 0.2);
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .code-language {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: var(--primary-light);
+        }
+
+        .code-language i {
+            font-size: 14px;
+        }
+
+        .copy-code-btn {
+            background: rgba(255, 71, 87, 0.1);
+            border: 1px solid rgba(255, 71, 87, 0.3);
+            color: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        .copy-code-btn:hover {
+            background: rgba(255, 71, 87, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .copy-code-btn.copied {
+            background: rgba(40, 167, 69, 0.2);
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .copy-code-btn.copied i {
+            color: var(--success);
+        }
+
+        .code-content {
+            padding: 16px;
+            overflow-x: auto;
+            max-height: 500px;
+            background: #1e1e1e;
+        }
+
+        .code-content pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #e2e8f0;
+            tab-size: 4;
+        }
+
+        .inline-code {
+            background: rgba(255, 71, 87, 0.1);
+            color: var(--primary-light);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            border: 1px solid rgba(255, 71, 87, 0.2);
+        }
+
+        /* Syntax Highlighting */
+        .code-content .keyword { color: #569cd6; }
+        .code-content .string { color: #ce9178; }
+        .code-content .comment { color: #6a9955; }
+        .code-content .function { color: #dcdcaa; }
+        .code-content .number { color: #b5cea8; }
+        .code-content .operator { color: #d4d4d4; }
+        .code-content .class { color: #4ec9b0; }
+        .code-content .tag { color: #569cd6; }
+        .code-content .attr { color: #9cdcfe; }
+        .code-content .value { color: #ce9178; }
 
         /* TOAST NOTIFICATION */
         .toast-container {
@@ -126,7 +531,7 @@
             align-items: center;
             min-height: 100vh;
             padding: 20px;
-            background: linear-gradient(135deg, #0A0A18 0%, #1A1A2E 100%);
+            background: linear-gradient(135deg, #050505 0%, #0A0A0A 100%);
         }
 
         .login-container {
@@ -201,7 +606,7 @@
 
         .login-tab:hover {
             color: var(--text-primary);
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 71, 87, 0.05);
         }
 
         .login-tab.active {
@@ -267,11 +672,10 @@
         .form-input:focus {
             outline: none;
             border-color: var(--primary-light);
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+            box-shadow: 0 0 0 3px rgba(255, 71, 87, 0.2);
             background: rgba(255, 255, 255, 0.08);
         }
 
-        /* PERBAIKAN: Button Register di dalam Layout */
         .btn {
             width: 100%;
             padding: 14px;
@@ -355,7 +759,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(15, 15, 35, 0.95);
+            background: rgba(10, 10, 10, 0.95);
             backdrop-filter: blur(10px);
             z-index: 100;
             position: relative;
@@ -398,6 +802,14 @@
             justify-content: center;
             font-weight: 600;
             font-size: 14px;
+            overflow: hidden;
+            border: 2px solid var(--border-color);
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .user-details {
@@ -426,33 +838,34 @@
             border: 1px solid var(--text-secondary);
         }
 
+        .tier-pro {
+            color: #FF6B81;
+            background: rgba(255, 107, 129, 0.2);
+            border: 1px solid #FF6B81;
+        }
+
         .tier-vip {
-            color: #8B5CF6;
-            background: rgba(139, 92, 246, 0.2);
-            border: 1px solid #8B5CF6;
+            color: #FF4757;
+            background: rgba(255, 71, 87, 0.2);
+            border: 1px solid #FF4757;
         }
 
         .tier-premium {
-            color: #3B82F6;
-            background: rgba(59, 130, 246, 0.2);
-            border: 1px solid #3B82F6;
+            color: #FFC107;
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid #FFC107;
         }
 
-        .tier-vvip {
-            color: #F59E0B;
-            background: rgba(245, 158, 11, 0.2);
-            border: 1px solid #F59E0B;
-        }
-
-        .tier-kvip {
-            color: #EC4899;
-            background: rgba(236, 72, 153, 0.2);
-            border: 1px solid #EC4899;
+        .tier-owner {
+            color: #FF2E63;
+            background: rgba(255, 46, 99, 0.2);
+            border: 1px solid #FF2E63;
         }
 
         .header-actions {
             display: flex;
             gap: 12px;
+            align-items: center;
         }
 
         .icon-btn {
@@ -591,7 +1004,7 @@
         .sidebar-footer {
             padding: 16px;
             border-top: 1px solid var(--border-color);
-            background: rgba(15, 15, 25, 0.8);
+            background: rgba(10, 10, 15, 0.8);
         }
 
         .sidebar-actions {
@@ -627,7 +1040,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.7);
             z-index: 98;
             backdrop-filter: blur(2px);
         }
@@ -644,7 +1057,7 @@
         .chat-title-container {
             padding: 20px 32px;
             border-bottom: 1px solid var(--border-color);
-            background: rgba(15, 15, 35, 0.8);
+            background: rgba(10, 10, 10, 0.8);
             backdrop-filter: blur(10px);
         }
 
@@ -679,35 +1092,35 @@
             color: var(--text-secondary);
         }
 
+        .status-pro {
+            background: rgba(255, 107, 129, 0.2);
+            border: 1px solid #FF6B81;
+            color: #FF6B81;
+        }
+
         .status-vip {
-            background: rgba(139, 92, 246, 0.2);
+            background: rgba(255, 71, 87, 0.2);
             border: 1px solid var(--primary-light);
             color: var(--primary-light);
         }
 
         .status-premium {
-            background: rgba(59, 130, 246, 0.2);
-            border: 1px solid #3B82F6;
-            color: #3B82F6;
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid #FFC107;
+            color: #FFC107;
         }
 
-        .status-vvip {
-            background: rgba(245, 158, 11, 0.2);
-            border: 1px solid #F59E0B;
-            color: #F59E0B;
-        }
-
-        .status-kvip {
-            background: rgba(236, 72, 153, 0.2);
-            border: 1px solid #EC4899;
-            color: #EC4899;
+        .status-owner {
+            background: rgba(255, 46, 99, 0.2);
+            border: 1px solid #FF2E63;
+            color: #FF2E63;
         }
 
         .messages-container {
             flex: 1;
             overflow-y: auto;
             padding: 32px;
-            background: linear-gradient(135deg, rgba(15, 15, 35, 0.5) 0%, rgba(10, 10, 24, 0.5) 100%);
+            background: linear-gradient(135deg, rgba(10, 10, 10, 0.5) 0%, rgba(5, 5, 5, 0.5) 100%);
         }
 
         .welcome-message-ai {
@@ -767,14 +1180,28 @@
             justify-content: center;
             flex-shrink: 0;
             font-size: 16px;
+            overflow: hidden;
+            border: 2px solid var(--border-color);
         }
 
         .avatar.ai {
             background: var(--primary-gradient);
         }
 
+        .avatar.ai img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
         .avatar.user {
-            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+            background: linear-gradient(135deg, #FF6B81, #FF4757);
+        }
+
+        .avatar.user img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .message-content {
@@ -792,8 +1219,8 @@
         }
 
         .message.user .message-content {
-            border-right: 3px solid #3B82F6;
-            background: rgba(59, 130, 246, 0.1);
+            border-right: 3px solid #FF6B81;
+            background: rgba(255, 107, 129, 0.1);
         }
 
         .message-header {
@@ -817,7 +1244,7 @@
         }
 
         .message.user .message-sender {
-            color: #3B82F6;
+            color: #FF6B81;
         }
 
         .message-time {
@@ -835,99 +1262,33 @@
             color: var(--text-primary);
         }
 
-        /* Code Block Styles */
-        .code-block {
-            position: relative;
-            margin: 16px 0;
-            border-radius: var(--border-radius-sm);
-            overflow: hidden;
-            background: #1a1a2e;
-            border: 1px solid rgba(139, 92, 246, 0.3);
-        }
-
-        .code-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 16px;
-            background: rgba(139, 92, 246, 0.1);
-            border-bottom: 1px solid rgba(139, 92, 246, 0.2);
-        }
-
-        .code-language {
-            font-size: 12px;
-            color: var(--primary-light);
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .code-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .copy-code-btn {
-            background: rgba(139, 92, 246, 0.2);
-            border: 1px solid var(--primary-light);
-            color: var(--primary-light);
-            padding: 4px 12px;
-            border-radius: 6px;
-            font-size: 11px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            transition: all 0.3s ease;
-        }
-
-        .copy-code-btn:hover {
-            background: rgba(139, 92, 246, 0.3);
-            transform: translateY(-1px);
-        }
-
-        .copy-code-btn.copied {
-            background: rgba(16, 185, 129, 0.2);
-            border-color: var(--success);
-            color: var(--success);
-        }
-
-        .code-content {
-            padding: 16px;
-            overflow-x: auto;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            line-height: 1.5;
-            color: #e2e8f0;
-        }
-
-        .code-content pre {
-            margin: 0;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-
-        .inline-code {
-            background: rgba(139, 92, 246, 0.1);
-            color: var(--primary-light);
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-        }
-
         /* Input Container */
         .input-container {
             padding: 20px 32px;
             border-top: 1px solid var(--border-color);
-            background: rgba(15, 15, 35, 0.95);
+            background: rgba(10, 10, 10, 0.95);
             backdrop-filter: blur(10px);
         }
 
         .input-wrapper {
             max-width: 800px;
             margin: 0 auto;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+        }
+
+        /* AI Mode Selector di Input */
+        .input-mode-selector {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .input-area {
+            flex: 1;
             position: relative;
         }
 
@@ -950,7 +1311,7 @@
             outline: none;
             border-color: var(--primary-light);
             background: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+            box-shadow: 0 0 0 3px rgba(255, 71, 87, 0.1);
         }
 
         .input-actions {
@@ -986,14 +1347,14 @@
             cursor: not-allowed;
         }
 
-        /* Admin Panel Styles */
+        /* ADMIN PANEL STYLES */
         .admin-panel {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.95);
+            background: linear-gradient(135deg, #050505 0%, #0A0A0A 100%);
             z-index: 10000;
             padding: 20px;
             overflow-y: auto;
@@ -1005,26 +1366,31 @@
             margin-bottom: 30px;
             padding-bottom: 20px;
             border-bottom: 2px solid var(--primary-light);
+            position: relative;
         }
 
         .admin-title {
             background: var(--primary-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-size: 32px;
+            font-size: 36px;
             font-weight: 800;
             margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(255, 71, 87, 0.3);
         }
 
         .admin-subtitle {
             color: var(--text-secondary);
             font-size: 14px;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
         }
 
         .admin-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 20px;
+            gap: 24px;
             margin-bottom: 30px;
         }
 
@@ -1032,76 +1398,126 @@
             background: var(--card-bg);
             border-radius: var(--border-radius);
             border: 1px solid var(--border-color);
-            padding: 20px;
+            padding: 24px;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+        }
+
+        .admin-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+            border-color: var(--primary-light);
         }
 
         .admin-card h3 {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             margin-bottom: 20px;
             color: var(--text-primary);
-            font-size: 18px;
+            font-size: 20px;
             border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
+            padding-bottom: 12px;
         }
 
         .admin-card h3 i {
             color: var(--primary-light);
+            font-size: 18px;
         }
 
         .user-list {
-            max-height: 300px;
+            max-height: 400px;
             overflow-y: auto;
+            padding-right: 5px;
         }
 
         .user-item {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 12px;
+            padding: 14px;
             background: rgba(255, 255, 255, 0.05);
             border-radius: var(--border-radius-sm);
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             transition: all 0.3s ease;
+            border: 1px solid transparent;
         }
 
         .user-item:hover {
             background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 71, 87, 0.3);
             transform: translateX(5px);
+        }
+
+        .user-item-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            margin-right: 12px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .user-item-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .user-item-info {
             flex: 1;
+            min-width: 0;
         }
 
         .user-item-name {
             font-weight: 600;
             color: var(--text-primary);
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        .user-item-meta {
+            display: flex;
+            gap: 12px;
+            align-items: center;
         }
 
         .user-item-tier {
             font-size: 11px;
             font-weight: 600;
-            padding: 2px 8px;
+            padding: 4px 10px;
             border-radius: 12px;
             display: inline-block;
-            margin-top: 4px;
+        }
+
+        .user-item-date {
+            font-size: 11px;
+            color: var(--text-secondary);
         }
 
         .user-item-actions {
             display: flex;
             gap: 8px;
+            margin-left: 12px;
         }
 
         .admin-btn {
-            padding: 8px 12px;
+            padding: 8px 16px;
             border-radius: var(--border-radius-sm);
             border: none;
             cursor: pointer;
             font-size: 12px;
             font-weight: 600;
             transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
         }
 
         .admin-btn.upgrade {
@@ -1109,57 +1525,94 @@
             color: white;
         }
 
+        .admin-btn.edit {
+            background: rgba(23, 162, 184, 0.2);
+            color: #17a2b8;
+            border: 1px solid #17a2b8;
+        }
+
         .admin-btn.delete {
-            background: rgba(239, 68, 68, 0.2);
+            background: rgba(220, 53, 69, 0.2);
             color: var(--danger);
             border: 1px solid var(--danger);
         }
 
         .admin-btn:hover {
             transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .search-box-container {
+            margin-bottom: 20px;
+            position: relative;
         }
 
         .search-box {
             width: 100%;
-            padding: 12px 16px;
-            background: rgba(255, 255, 255, 0.05);
+            padding: 14px 20px 14px 45px;
+            background: rgba(255, 255, 255, 0.07);
             border: 1px solid var(--border-color);
-            border-radius: var(--border-radius-sm);
+            border-radius: var(--border-radius);
             color: var(--text-primary);
-            margin-bottom: 16px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(255, 71, 87, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 16px;
         }
 
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 20px;
+            margin-bottom: 24px;
         }
 
         .stat-card {
-            background: rgba(139, 92, 246, 0.1);
-            border-radius: var(--border-radius-sm);
-            padding: 15px;
+            background: linear-gradient(135deg, rgba(255, 71, 87, 0.1), rgba(255, 71, 87, 0.05));
+            border-radius: var(--border-radius);
+            padding: 20px;
             text-align: center;
+            border: 1px solid rgba(255, 71, 87, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 71, 87, 0.15);
         }
 
         .stat-value {
-            font-size: 24px;
-            font-weight: 700;
+            font-size: 32px;
+            font-weight: 800;
             background: var(--primary-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            line-height: 1;
         }
 
         .stat-label {
-            font-size: 12px;
+            font-size: 13px;
             color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .admin-form-group {
-            margin-bottom: 15px;
+            margin-bottom: 18px;
         }
 
         .admin-form-group label {
@@ -1167,61 +1620,87 @@
             margin-bottom: 8px;
             color: var(--text-secondary);
             font-size: 14px;
+            font-weight: 500;
         }
 
         .select-input {
             width: 100%;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.07);
             border: 1px solid var(--border-color);
             border-radius: var(--border-radius-sm);
             color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .select-input:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(255, 71, 87, 0.1);
         }
 
         .close-admin {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 25px;
+            right: 25px;
             width: 50px;
             height: 50px;
-            background: rgba(239, 68, 68, 0.2);
+            background: rgba(220, 53, 69, 0.15);
             border: 1px solid var(--danger);
             border-radius: 50%;
             color: var(--danger);
-            font-size: 20px;
+            font-size: 22px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
             z-index: 10001;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
         .close-admin:hover {
-            background: rgba(239, 68, 68, 0.3);
+            background: rgba(220, 53, 69, 0.25);
             transform: rotate(90deg);
+            box-shadow: 0 8px 20px rgba(220, 53, 69, 0.3);
         }
 
         /* Upgrade Form Section */
         .upgrade-form-section {
-            margin-top: 20px;
-            padding-top: 20px;
+            margin-top: 24px;
+            padding-top: 24px;
             border-top: 1px solid var(--border-color);
+        }
+
+        .upgrade-form-section h4 {
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .manual-user-input {
             display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 12px;
+            margin-bottom: 16px;
         }
 
         .manual-user-input input {
             flex: 1;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.07);
             border: 1px solid var(--border-color);
             border-radius: var(--border-radius-sm);
             color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .manual-user-input input:focus {
+            outline: none;
+            border-color: var(--primary-light);
         }
 
         /* Modals */
@@ -1231,7 +1710,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             display: none;
             align-items: center;
             justify-content: center;
@@ -1336,6 +1815,99 @@
             font-size: 14px;
         }
 
+        /* UPLOAD PHOTO STYLES */
+        .photo-upload-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .photo-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid var(--border-color);
+            background: var(--glass-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .photo-preview:hover {
+            border-color: var(--primary-light);
+            transform: scale(1.05);
+        }
+
+        .photo-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-preview i {
+            font-size: 24px;
+            color: var(--text-secondary);
+        }
+
+        .photo-upload-info {
+            flex: 1;
+        }
+
+        .photo-upload-info h4 {
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .photo-upload-info p {
+            color: var(--text-secondary);
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+
+        .photo-upload-btn {
+            padding: 8px 16px;
+            background: rgba(255, 71, 87, 0.1);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            color: var(--primary-light);
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .photo-upload-btn:hover {
+            background: rgba(255, 71, 87, 0.2);
+        }
+
+        #photoUpload {
+            display: none;
+        }
+
+        .remove-photo-btn {
+            padding: 6px 12px;
+            background: rgba(220, 53, 69, 0.1);
+            border: 1px solid var(--danger);
+            border-radius: var(--border-radius-sm);
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+        }
+
+        .remove-photo-btn:hover {
+            background: rgba(220, 53, 69, 0.2);
+        }
+
         /* Upgrade Modal */
         .tier-grid {
             display: grid;
@@ -1358,7 +1930,7 @@
         }
 
         .tier-card.selected {
-            background: rgba(139, 92, 246, 0.1);
+            background: rgba(255, 71, 87, 0.1);
             border-color: var(--primary-light);
         }
 
@@ -1397,7 +1969,7 @@
         }
 
         .payment-steps {
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.4);
             border-radius: var(--border-radius-sm);
             padding: 20px;
             margin: 20px 0;
@@ -1484,7 +2056,7 @@
         .loading-spinner {
             width: 16px;
             height: 16px;
-            border: 2px solid rgba(139, 92, 246, 0.3);
+            border: 2px solid rgba(255, 71, 87, 0.3);
             border-top-color: var(--primary-light);
             border-radius: 50%;
             animation: spin 1s linear infinite;
@@ -1498,7 +2070,7 @@
 
         /* Current Tier Info */
         .current-tier-info {
-            background: rgba(139, 92, 246, 0.15);
+            background: rgba(255, 71, 87, 0.15);
             border-left: 4px solid var(--primary-light);
             padding: 16px;
             border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0;
@@ -1566,6 +2138,12 @@
                 justify-content: center;
             }
             
+            .ai-mode-btn {
+                width: 36px;
+                height: 36px;
+                font-size: 16px;
+            }
+            
             .messages-container {
                 padding: 16px;
             }
@@ -1593,6 +2171,14 @@
                 padding: 16px;
             }
             
+            .input-wrapper {
+                gap: 8px;
+            }
+            
+            .mode-indicator {
+                font-size: 9px;
+            }
+            
             .chat-input {
                 padding-right: 80px;
             }
@@ -1605,6 +2191,30 @@
                 padding: 24px 16px;
             }
             
+            /* Mode Modal Mobile */
+            .mode-modal-content {
+                margin: 10px;
+                max-height: 85vh;
+            }
+            
+            /* Code Block Mobile */
+            .code-block {
+                margin: 12px 0;
+            }
+            
+            .code-content {
+                padding: 12px;
+            }
+            
+            .code-content pre {
+                font-size: 13px;
+            }
+            
+            .copy-code-btn {
+                padding: 5px 10px;
+                font-size: 11px;
+            }
+            
             /* Admin Panel Mobile */
             .admin-grid {
                 grid-template-columns: 1fr;
@@ -1612,6 +2222,21 @@
             
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .admin-card {
+                padding: 16px;
+            }
+            
+            .user-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .user-item-actions {
+                width: 100%;
+                justify-content: flex-end;
             }
         }
 
@@ -1631,7 +2256,7 @@
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, #7C3AED, #6D28D9);
+            background: linear-gradient(135deg, #DC3545, #C82333);
         }
     </style>
 </head>
@@ -1639,16 +2264,39 @@
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
 
+    <!-- AI Mode Selector Modal -->
+    <div id="modeModal" class="mode-modal-overlay">
+        <div class="mode-modal-content">
+            <div class="mode-modal-header">
+                <div>
+                    <div class="mode-modal-title">Pilih Mode AI</div>
+                    <div class="mode-modal-subtitle">Atur gaya berpikir dan kecepatan jawaban XENO-GPT</div>
+                </div>
+                <button class="mode-modal-close" id="closeModeModal">&times;</button>
+            </div>
+            <div class="mode-modal-body">
+                <div class="mode-cards-grid" id="modeCardsGrid">
+                    <!-- Mode cards will be generated by JavaScript -->
+                </div>
+            </div>
+            <div class="mode-modal-footer">
+                <div class="current-mode-info">
+                    Mode aktif: <span class="current-mode-name" id="currentModeName">Auto (Default)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Login Screen -->
     <div id="loginScreen">
         <div class="login-container">
             <div class="logo-section">
-                <div class="logo-gradient">DARKVOID</div>
+                <div class="logo-gradient">XENO-GPT</div>
                 <div class="logo-subtitle">Advanced AI Assistant</div>
             </div>
             
             <div class="login-message">
-                <p>Silakan login atau buat akun untuk mengakses DARKVOID AI</p>
+                <p>Silakan login atau buat akun untuk mengakses XENO-GPT</p>
             </div>
             
             <!-- Login Tabs -->
@@ -1677,10 +2325,9 @@
                     <div class="error-message" id="loginError"></div>
                     <div class="success-message" id="loginSuccess"></div>
                     
-                    <!-- Button Login - Full width di dalam layout -->
                     <button type="submit" class="btn" id="loginBtn">
                         <i class="fas fa-sign-in-alt"></i>
-                        Login ke DARKVOID
+                        Login ke XENO-GPT
                     </button>
                     
                     <div class="form-footer">
@@ -1708,7 +2355,6 @@
                     <div class="error-message" id="registerError"></div>
                     <div class="success-message" id="registerSuccess"></div>
                     
-                    <!-- Button Register - Full width di dalam layout -->
                     <button type="submit" class="btn" id="registerBtn">
                         <i class="fas fa-user-plus"></i>
                         Buat Akun Sekarang
@@ -1800,7 +2446,7 @@
             <div class="chat-main">
                 <div class="chat-title-container">
                     <div class="chat-title">
-                        <span id="currentChatTitle">DARKVOID Assistant</span>
+                        <span id="currentChatTitle">XENO-GPT Assistant</span>
                         <div class="chat-status">
                             <div class="status-badge" id="chatStatusBadge">
                                 <i class="fas fa-user"></i>
@@ -1812,19 +2458,30 @@
                 
                 <div class="messages-container" id="messagesContainer"></div>
                 
+                <!-- Input Container -->
                 <div class="input-container">
                     <div class="input-wrapper">
-                        <textarea 
-                            id="messageInput" 
-                            class="chat-input" 
-                            placeholder="Ketik pesan untuk darkvoid..." 
-                            rows="1"
-                            oninput="autoResize(this)"
-                        ></textarea>
-                        <div class="input-actions">
-                            <button class="send-btn" id="sendBtn" title="Kirim pesan">
-                                <i class="fas fa-paper-plane"></i>
+                        <!-- AI Mode Selector di sebelah kiri input -->
+                        <div class="input-mode-selector">
+                            <button class="ai-mode-btn" id="aiModeBtn" title="Pilih Mode AI">
+                                <i class="fas fa-rocket"></i>
                             </button>
+                            <div class="mode-indicator" id="modeIndicator">Auto</div>
+                        </div>
+                        
+                        <div class="input-area">
+                            <textarea 
+                                id="messageInput" 
+                                class="chat-input" 
+                                placeholder="Ketik pesan.." 
+                                rows="1"
+                                oninput="autoResize(this)"
+                            ></textarea>
+                            <div class="input-actions">
+                                <button class="send-btn" id="sendBtn" title="Kirim pesan">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1844,6 +2501,24 @@
                     <!-- Informasi Akun -->
                     <div class="settings-section">
                         <h3><i class="fas fa-user-circle"></i> Informasi Akun</h3>
+                        <div class="photo-upload-container">
+                            <div class="photo-preview" id="settingsPhotoPreview">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="photo-upload-info">
+                                <h4>Foto Profil</h4>
+                                <p>Ubah foto profil Anda</p>
+                                <button type="button" class="photo-upload-btn" onclick="document.getElementById('settingsPhotoUpload').click()">
+                                    <i class="fas fa-upload"></i>
+                                    Ubah Foto
+                                </button>
+                                <input type="file" id="settingsPhotoUpload" accept="image/*" style="display: none;">
+                                <button type="button" class="remove-photo-btn" id="removePhotoBtn">
+                                    <i class="fas fa-trash"></i>
+                                    Hapus Foto
+                                </button>
+                            </div>
+                        </div>
                         <div class="info-row">
                             <div class="info-label">Username</div>
                             <div class="info-value" id="settingsUsername">-</div>
@@ -1887,7 +2562,7 @@
                         <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 14px;">
                             Keluar dari akun Anda dan kembali ke halaman login
                         </p>
-                        <button class="btn" id="logoutFromSettingsBtn" style="background: rgba(239, 68, 68, 0.2); border-color: #EF4444;">
+                        <button class="btn" id="logoutFromSettingsBtn" style="background: rgba(220, 53, 69, 0.2); border-color: #DC3545;">
                             <i class="fas fa-sign-out-alt"></i>
                             Logout
                         </button>
@@ -1913,48 +2588,36 @@
 
                 <!-- Grid Paket Upgrade -->
                 <div class="tier-grid">
-                    <!-- VIP - 2k/1hari -->
-                    <div class="tier-card" data-tier="VIP" data-days="1" data-price="2000">
-                        <h3>VIP - 1 Hari</h3>
+                    <!-- PRO - 2k/1hari -->
+                    <div class="tier-card" data-tier="PRO" data-days="1" data-price="2000">
+                        <h3>PRO - 1 Hari</h3>
                         <div class="tier-price">Rp 2.000</div>
                         <ul class="tier-features">
-                            <li><i class="fas fa-check"></i> 100 pesan/hari</li>
+                            <li><i class="fas fa-check"></i> 500 pesan/hari</li>
                             <li><i class="fas fa-check"></i> Akses prioritas</li>
                             <li><i class="fas fa-check"></i> Support via chat</li>
                         </ul>
                     </div>
                     
-                    <!-- PREMIUM - 5k/3hari -->
-                    <div class="tier-card" data-tier="PREMIUM" data-days="3" data-price="5000">
-                        <h3>PREMIUM - 3 Hari</h3>
+                    <!-- VIP - 5k/3hari -->
+                    <div class="tier-card" data-tier="VIP" data-days="3" data-price="5000">
+                        <h3>VIP - 3 Hari</h3>
                         <div class="tier-price">Rp 5.000</div>
                         <ul class="tier-features">
-                            <li><i class="fas fa-check"></i> 300 pesan/hari</li>
-                            <li><i class="fas fa-check"></i> Semua fitur VIP</li>
+                            <li><i class="fas fa-check"></i> 1000 pesan/hari</li>
+                            <li><i class="fas fa-check"></i> Semua fitur PRO</li>
                             <li><i class="fas fa-check"></i> Support prioritas</li>
                         </ul>
                     </div>
                     
-                    <!-- VVIP - 10k/7hari -->
-                    <div class="tier-card" data-tier="VVIP" data-days="7" data-price="10000">
-                        <h3>VVIP - 7 Hari</h3>
+                    <!-- PREMIUM - 10k/7hari -->
+                    <div class="tier-card" data-tier="PREMIUM" data-days="7" data-price="10000">
+                        <h3>PREMIUM - 7 Hari</h3>
                         <div class="tier-price">Rp 10.000</div>
                         <ul class="tier-features">
-                            <li><i class="fas fa-check"></i> 500 pesan/hari</li>
-                            <li><i class="fas fa-check"></i> Semua fitur PREMIUM</li>
-                            <li><i class="fas fa-check"></i> Support 24/7</li>
-                        </ul>
-                    </div>
-                    
-                    <!-- KVIP - 20k/30hari -->
-                    <div class="tier-card" data-tier="KVIP" data-days="30" data-price="20000">
-                        <h3>KVIP - 30 Hari</h3>
-                        <div class="tier-price">Rp 20.000</div>
-                        <ul class="tier-features">
                             <li><i class="fas fa-check"></i> Pesan tak terbatas</li>
-                            <li><i class="fas fa-check"></i> Semua fitur VVIP</li>
-                            <li><i class="fas fa-check"></i> Support instan</li>
-                            <li><i class="fas fa-check"></i> Fitur eksklusif</li>
+                            <li><i class="fas fa-check"></i> Semua fitur VIP</li>
+                            <li><i class="fas fa-check"></i> Support 24/7</li>
                         </ul>
                     </div>
                 </div>
@@ -2005,7 +2668,118 @@
 
     <!-- Admin Panel -->
     <div id="adminPanel" class="admin-panel">
-        <!-- Admin Panel Content will be generated by JavaScript -->
+        <button class="close-admin" id="closeAdminBtn">&times;</button>
+        <div class="admin-header">
+            <div class="admin-title">ADMIN PANEL</div>
+            <div class="admin-subtitle">Kelola semua user, upgrade tier, dan pantau aktivitas sistem</div>
+        </div>
+        
+        <!-- Stats Grid -->
+        <div class="stats-grid" id="adminStats">
+            <!-- Stats akan diisi oleh JavaScript -->
+        </div>
+        
+        <!-- Search Box -->
+        <div class="search-box-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="adminSearch" class="search-box" placeholder="Cari user berdasarkan username...">
+        </div>
+        
+        <!-- Admin Cards Grid -->
+        <div class="admin-grid">
+            <!-- User Management Card -->
+            <div class="admin-card">
+                <h3><i class="fas fa-users"></i> Kelola User</h3>
+                <div class="user-list" id="userList">
+                    <!-- User list akan diisi oleh JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Upgrade User Card -->
+            <div class="admin-card">
+                <h3><i class="fas fa-crown"></i> Upgrade User</h3>
+                <div class="upgrade-form-section">
+                    <h4><i class="fas fa-user-edit"></i> Manual User Upgrade</h4>
+                    <div class="manual-user-input">
+                        <input type="text" id="manualUsername" placeholder="Masukkan username">
+                        <select id="manualTier" class="select-input">
+                            <option value="MEMBER">MEMBER</option>
+                            <option value="PRO">PRO</option>
+                            <option value="VIP">VIP</option>
+                            <option value="PREMIUM">PREMIUM</option>
+                            <option value="OWNER">OWNER</option>
+                        </select>
+                        <input type="number" id="manualDays" placeholder="Hari" value="30" class="select-input" style="width: 80px;">
+                    </div>
+                    <button class="admin-btn upgrade" id="manualUpgradeBtn">
+                        <i class="fas fa-check"></i>
+                        Terapkan Upgrade
+                    </button>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <h4><i class="fas fa-chart-line"></i> Quick Actions</h4>
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px;">
+                        <button class="admin-btn upgrade" onclick="adminUpgradeAll('PRO', 30)">
+                            <i class="fas fa-bolt"></i>
+                            Upgrade All to PRO
+                        </button>
+                        <button class="admin-btn edit" onclick="adminResetLimits()">
+                            <i class="fas fa-redo"></i>
+                            Reset Limits
+                        </button>
+                        <button class="admin-btn delete" onclick="adminDeleteInactive()">
+                            <i class="fas fa-trash"></i>
+                            Delete Inactive
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- System Info Card -->
+            <div class="admin-card">
+                <h3><i class="fas fa-server"></i> Info Sistem</h3>
+                <div class="info-row">
+                    <div class="info-label">Total Users</div>
+                    <div class="info-value" id="totalUsers">0</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Active Today</div>
+                    <div class="info-value" id="activeToday">0</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Total Chats</div>
+                    <div class="info-value" id="totalChats">0</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Storage Used</div>
+                    <div class="info-value" id="storageUsed">0 KB</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">API Status</div>
+                    <div class="info-value" style="color: var(--success);">Active</div>
+                </div>
+                
+                <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+                    <h4><i class="fas fa-database"></i> System Actions</h4>
+                    <div style="display: flex; gap: 10px; margin-top: 15px;">
+                        <button class="admin-btn edit" onclick="adminExportData()">
+                            <i class="fas fa-download"></i>
+                            Export Data
+                        </button>
+                        <button class="admin-btn delete" onclick="adminClearAllChats()">
+                            <i class="fas fa-trash-alt"></i>
+                            Clear All Chats
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer Note -->
+        <div style="text-align: center; margin-top: 30px; color: var(--text-secondary); font-size: 12px;">
+            <p><i class="fas fa-shield-alt"></i> Admin Panel - Hanya untuk user dengan tier OWNER</p>
+        </div>
     </div>
 
     <script>
@@ -2014,69 +2788,109 @@
             currentUser: null,
             currentChat: null,
             chats: [],
-            apiKey: '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',
-            adminMode: false
+            apiKey: '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',
+            adminMode: false,
+            aiMode: 'auto' // Default mode
         };
 
-        // Konfigurasi Tier dengan warna dan icon
+        // Konfigurasi AI Modes
+        const AI_MODES = {
+            fast: {
+                name: 'Fast Mode',
+                icon: '<i class="fas fa-bolt"></i>',
+                shortName: 'Fast',
+                description: 'Jawaban cepat, singkat, langsung inti.',
+                badge: '',
+                systemPrompt: 'Kamu adalah XENO-GPT. Gunakan bahasa Indonesia yang to the point. Wajib menjawab singkat, maksimal 3-7 baris kecuali diminta detail. Fokus pada inti masalah.',
+                responseStyle: 'cepat dan singkat'
+            },
+            auto: {
+                name: 'Auto (Default)',
+                icon: '<i class="fas fa-rocket"></i>',
+                shortName: 'Auto',
+                description: 'Akurasi tinggi, respon seimbang.',
+                badge: 'DEFAULT',
+                systemPrompt: 'Kamu adalah XENO-GPT. Gunakan bahasa Indonesia yang seimbang. Berikan jawaban yang akurat dan jelas, dengan penjelasan yang cukup namun tidak bertele-tele. Jika user meminta kode dalam bahasa apapun (js, html, css, python, lua, dll), berikan kode dalam format code block dengan syntax highlighting.',
+                responseStyle: 'seimbang dan akurat'
+            },
+            expert: {
+                name: 'Expert',
+                icon: '<i class="fas fa-lightbulb"></i>',
+                shortName: 'Expert',
+                description: 'Jawaban lebih pintar, detail, dan profesional.',
+                badge: '',
+                systemPrompt: 'Kamu adalah XENO-GPT Expert. Gunakan bahasa Indonesia profesional dan detail. Berikan analisis mendalam, struktur yang jelas (ringkasan, langkah, contoh, best practice). Cocok untuk pemrograman dan problem solving kompleks. Wajib berikan code dalam format code block yang rapi.',
+                responseStyle: 'detail dan profesional'
+            },
+            xeno_thinking: {
+                name: 'Xeno Thinking',
+                icon: '<i class="fas fa-moon"></i>',
+                shortName: 'Xeno',
+                description: 'Ultra reasoning, strategi matang, jawaban paling optimal.',
+                badge: 'PRO',
+                systemPrompt: 'Kamu adalah XENO-GPT dalam mode Xeno Thinking. Gunakan bahasa Indonesia tingkat tinggi. Lakukan deep reasoning step-by-step, berikan strategi matang, solusi optimal, rencana lengkap dengan checklist. Mode ini untuk analisis ultra mendalam. Untuk kode programming, berikan implementasi lengkap dengan error handling dan dokumentasi.',
+                responseStyle: 'super matang dan strategis',
+                requiresPro: true
+            }
+        };
+
+        // Konfigurasi Tier dengan limit yang baru
         const TIERS = {
             MEMBER: { 
-                limit: 10, 
+                limit: 5,
                 color: '#6B7280', 
-                textColor: '#B0B0CC',
+                textColor: '#CCCCCC',
                 badgeClass: 'status-member',
                 tierClass: 'tier-member',
                 icon: 'fa-user',
                 badgeIcon: 'fa-user',
-                features: ['10 pesan/hari', 'Akses dasar', 'Support terbatas']
+                features: ['5 pesan/hari', 'Akses dasar', 'Support terbatas']
+            },
+            PRO: { 
+                limit: 500,
+                color: '#FF6B81', 
+                textColor: '#FF8FA3',
+                badgeClass: 'status-pro',
+                tierClass: 'tier-pro',
+                icon: 'fa-gem',
+                badgeIcon: 'fa-gem',
+                price: 2000, 
+                days: 1,
+                features: ['500 pesan/hari', 'Akses prioritas', 'Support via chat']
             },
             VIP: { 
-                limit: 100, 
-                color: '#8B5CF6', 
-                textColor: '#A855F7',
+                limit: 1000,
+                color: '#FF4757', 
+                textColor: '#FF6B81',
                 badgeClass: 'status-vip',
                 tierClass: 'tier-vip',
                 icon: 'fa-crown',
                 badgeIcon: 'fa-crown',
-                price: 2000, 
-                days: 1,
-                features: ['100 pesan/hari', 'Akses prioritas', 'Support via chat']
-            },
-            PREMIUM: { 
-                limit: 300, 
-                color: '#3B82F6', 
-                textColor: '#60A5FA',
-                badgeClass: 'status-premium',
-                tierClass: 'tier-premium',
-                icon: 'fa-gem',
-                badgeIcon: 'fa-gem',
                 price: 5000, 
                 days: 3,
-                features: ['300 pesan/hari', 'Semua fitur VIP', 'Support prioritas']
+                features: ['1000 pesan/hari', 'Semua fitur PRO', 'Support prioritas']
             },
-            VVIP: { 
-                limit: 500, 
-                color: '#F59E0B', 
-                textColor: '#FBBF24',
-                badgeClass: 'status-vvip',
-                tierClass: 'tier-vvip',
+            PREMIUM: { 
+                limit: 9999,
+                color: '#FFC107', 
+                textColor: '#FFD54F',
+                badgeClass: 'status-premium',
+                tierClass: 'tier-premium',
                 icon: 'fa-rocket',
                 badgeIcon: 'fa-rocket',
                 price: 10000, 
                 days: 7,
-                features: ['500 pesan/hari', 'Semua fitur PREMIUM', 'Support 24/7']
+                features: ['Pesan tak terbatas', 'Semua fitur VIP', 'Support 24/7']
             },
-            KVIP: { 
-                limit: 9999, 
-                color: '#EC4899', 
-                textColor: '#F472B6',
-                badgeClass: 'status-kvip',
-                tierClass: 'tier-kvip',
+            OWNER: { 
+                limit: 99999,
+                color: '#FF2E63', 
+                textColor: '#FF6384',
+                badgeClass: 'status-owner',
+                tierClass: 'tier-owner',
                 icon: 'fa-star',
                 badgeIcon: 'fa-star',
-                price: 20000, 
-                days: 30,
-                features: ['Pesan tak terbatas', 'Semua fitur VVIP', 'Support instan', 'Fitur eksklusif']
+                features: ['Pesan tak terbatas', 'Semua fitur PREMIUM', 'Akses admin panel']
             }
         };
 
@@ -2085,8 +2899,85 @@
             initializeEventListeners();
             setupLoginTabs();
             checkAutoLogin();
+            loadAIMode();
+            setupPhotoUploads();
         });
 
+        function setupPhotoUploads() {
+            // Setup photo upload for settings
+            document.getElementById('settingsPhotoUpload').addEventListener('change', handlePhotoUpload);
+            
+            // Setup remove photo button
+            document.getElementById('removePhotoBtn').addEventListener('click', removeUserPhoto);
+        }
+
+        // ============ PHOTO UPLOAD SYSTEM ============
+        function handlePhotoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // Validasi file
+            if (!file.type.match('image.*')) {
+                showToast('Hanya file gambar yang diperbolehkan!', 'error');
+                return;
+            }
+            
+            if (file.size > 2 * 1024 * 1024) { // 2MB
+                showToast('Ukuran file maksimal 2MB!', 'error');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const photoData = e.target.result;
+                
+                // Settings photo - update user data
+                if (SYSTEM.currentUser) {
+                    SYSTEM.currentUser.photo = photoData;
+                    localStorage.setItem(`xenogpt_user_${SYSTEM.currentUser.username}`, JSON.stringify(SYSTEM.currentUser));
+                    
+                    // Update UI
+                    updateUserPhoto();
+                    document.getElementById('settingsPhotoPreview').innerHTML = `<img src="${photoData}" alt="Preview">`;
+                    showToast('Foto profil berhasil diubah!', 'success');
+                }
+            };
+            
+            reader.readAsDataURL(file);
+            event.target.value = ''; // Reset input
+        }
+
+        function removeUserPhoto() {
+            if (SYSTEM.currentUser && confirm('Hapus foto profil?')) {
+                delete SYSTEM.currentUser.photo;
+                localStorage.setItem(`xenogpt_user_${SYSTEM.currentUser.username}`, JSON.stringify(SYSTEM.currentUser));
+                
+                // Update UI
+                updateUserPhoto();
+                document.getElementById('settingsPhotoPreview').innerHTML = '<i class="fas fa-user"></i>';
+                showToast('Foto profil dihapus!', 'success');
+            }
+        }
+
+        function updateUserPhoto() {
+            const userAvatar = document.getElementById('userAvatar');
+            const settingsPhotoPreview = document.getElementById('settingsPhotoPreview');
+            
+            if (SYSTEM.currentUser && SYSTEM.currentUser.photo) {
+                userAvatar.innerHTML = `<img src="${SYSTEM.currentUser.photo}" alt="${SYSTEM.currentUser.username}">`;
+                if (settingsPhotoPreview) {
+                    settingsPhotoPreview.innerHTML = `<img src="${SYSTEM.currentUser.photo}" alt="${SYSTEM.currentUser.username}">`;
+                }
+            } else {
+                const initials = SYSTEM.currentUser ? SYSTEM.currentUser.username.substring(0, 2).toUpperCase() : 'U';
+                userAvatar.innerHTML = initials;
+                if (settingsPhotoPreview) {
+                    settingsPhotoPreview.innerHTML = '<i class="fas fa-user"></i>';
+                }
+            }
+        }
+
+        // ============ FUNGSI UTAMA ============
         function initializeEventListeners() {
             // Form Login
             document.getElementById('loginForm').addEventListener('submit', (e) => {
@@ -2121,6 +3012,12 @@
             document.getElementById('clearChatBtn').addEventListener('click', clearCurrentChat);
             document.getElementById('logoutFromSettingsBtn').addEventListener('click', logoutUser);
             
+            // AI Mode Selector
+            document.getElementById('aiModeBtn').addEventListener('click', showAIModeModal);
+            document.getElementById('closeModeModal').addEventListener('click', () => {
+                document.getElementById('modeModal').classList.remove('active');
+            });
+            
             // Menu Mobile
             document.getElementById('mobileMenuBtn').addEventListener('click', () => {
                 document.getElementById('sidebar').classList.add('active');
@@ -2154,6 +3051,30 @@
                     updatePaymentInfo(card);
                 });
             });
+
+            // Admin Panel Controls
+            document.getElementById('closeAdminBtn').addEventListener('click', hideAdminPanel);
+            document.getElementById('adminSearch').addEventListener('input', searchUsers);
+            document.getElementById('manualUpgradeBtn').addEventListener('click', manualUpgradeUser);
+
+            // Close mode modal ketika klik di luar
+            document.getElementById('modeModal').addEventListener('click', (e) => {
+                if (e.target === document.getElementById('modeModal')) {
+                    document.getElementById('modeModal').classList.remove('active');
+                }
+            });
+
+            // Close dengan ESC key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    if (document.getElementById('modeModal').classList.contains('active')) {
+                        document.getElementById('modeModal').classList.remove('active');
+                    }
+                    if (document.getElementById('adminPanel').style.display === 'block') {
+                        hideAdminPanel();
+                    }
+                }
+            });
         }
 
         function setupLoginTabs() {
@@ -2183,14 +3104,297 @@
         }
 
         function checkAutoLogin() {
-            const currentUser = localStorage.getItem('darkvoid_current_user');
+            const currentUser = localStorage.getItem('xenogpt_current_user');
             if (currentUser) {
-                const userData = JSON.parse(localStorage.getItem('darkvoid_user_' + currentUser));
+                const userData = JSON.parse(localStorage.getItem('xenogpt_user_' + currentUser));
                 if (userData) {
                     SYSTEM.currentUser = userData;
                     showMainApp();
                 }
             }
+        }
+
+        function loadAIMode() {
+            const savedMode = localStorage.getItem('xeno_ai_mode');
+            if (savedMode && AI_MODES[savedMode]) {
+                SYSTEM.aiMode = savedMode;
+            }
+            updateAIModeButton();
+        }
+
+        function saveAIMode(mode) {
+            SYSTEM.aiMode = mode;
+            localStorage.setItem('xeno_ai_mode', mode);
+            updateAIModeButton();
+            updateModeModal();
+        }
+
+        function updateAIModeButton() {
+            const modeBtn = document.getElementById('aiModeBtn');
+            const modeIndicator = document.getElementById('modeIndicator');
+            const mode = AI_MODES[SYSTEM.aiMode];
+            
+            if (mode) {
+                modeBtn.innerHTML = mode.icon;
+                modeBtn.title = `Mode: ${mode.name}`;
+                modeIndicator.textContent = mode.shortName;
+            }
+        }
+
+        function showAIModeModal() {
+            updateModeModal();
+            document.getElementById('modeModal').classList.add('active');
+        }
+
+        function updateModeModal() {
+            const modeCardsGrid = document.getElementById('modeCardsGrid');
+            const currentModeName = document.getElementById('currentModeName');
+            
+            currentModeName.textContent = AI_MODES[SYSTEM.aiMode]?.name || 'Auto (Default)';
+            
+            modeCardsGrid.innerHTML = '';
+            
+            Object.entries(AI_MODES).forEach(([modeKey, mode]) => {
+                const isProUser = SYSTEM.currentUser && (SYSTEM.currentUser.tier === 'OWNER' || SYSTEM.currentUser.tier === 'PRO' || SYSTEM.currentUser.tier === 'VIP' || SYSTEM.currentUser.tier === 'PREMIUM');
+                const isLocked = mode.requiresPro && !isProUser;
+                const isSelected = SYSTEM.aiMode === modeKey;
+                
+                const modeCard = document.createElement('div');
+                modeCard.className = `mode-card ${isSelected ? 'selected' : ''} ${isLocked ? 'locked' : ''}`;
+                modeCard.dataset.mode = modeKey;
+                
+                if (!isLocked) {
+                    modeCard.addEventListener('click', () => selectAIMode(modeKey));
+                }
+                
+                const badgeHTML = mode.badge ? `<span class="mode-badge ${mode.badge === 'PRO' ? 'badge-pro' : 'badge-default'}">${mode.badge}</span>` : '';
+                
+                modeCard.innerHTML = `
+                    <div class="mode-card-content">
+                        <div class="mode-card-icon">${mode.icon}</div>
+                        <div class="mode-card-info">
+                            <div class="mode-card-header">
+                                <div class="mode-card-name">${mode.name}</div>
+                                ${badgeHTML}
+                            </div>
+                            <div class="mode-card-desc">${mode.description}</div>
+                            ${isLocked ? `
+                                <div class="pro-only-label">
+                                    <i class="fas fa-lock"></i> PRO ONLY
+                                </div>
+                                <button class="upgrade-btn" onclick="showUpgradeModal()">
+                                    <i class="fas fa-crown"></i> Upgrade ke PRO
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                    <div class="mode-card-check">
+                        <i class="fas fa-check"></i>
+                    </div>
+                `;
+                
+                modeCardsGrid.appendChild(modeCard);
+            });
+        }
+
+        function selectAIMode(modeKey) {
+            const mode = AI_MODES[modeKey];
+            
+            if (mode.requiresPro) {
+                const isProUser = SYSTEM.currentUser && (SYSTEM.currentUser.tier === 'OWNER' || SYSTEM.currentUser.tier === 'PRO' || SYSTEM.currentUser.tier === 'VIP' || SYSTEM.currentUser.tier === 'PREMIUM');
+                if (!isProUser) {
+                    showToast('Mode ini khusus PRO. Upgrade untuk membuka Xeno Thinking 🌙', 'warning');
+                    return;
+                }
+            }
+            
+            saveAIMode(modeKey);
+            document.getElementById('modeModal').classList.remove('active');
+            showToast(`Mode AI diubah ke: ${mode.name}`, 'success');
+        }
+
+        // ============ CODE BLOCK PROCESSING ============
+        function processCodeBlocks(text) {
+            // Replace inline code
+            let processed = text.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
+            
+            // Replace code blocks with language
+            processed = processed.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, language, code) => {
+                const lang = language || 'text';
+                const codeId = 'code_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                
+                // Basic syntax highlighting
+                const highlightedCode = highlightSyntax(code.trim(), lang);
+                
+                return `
+                    <div class="code-block">
+                        <div class="code-header">
+                            <div class="code-language">
+                                <i class="fas fa-code"></i>
+                                ${lang.toUpperCase()}
+                            </div>
+                            <div class="code-actions">
+                                <button class="copy-code-btn" data-code-id="${codeId}">
+                                    <i class="fas fa-copy"></i>
+                                    Copy Code
+                                </button>
+                            </div>
+                        </div>
+                        <div class="code-content">
+                            <pre>${highlightedCode}</pre>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            return processed.replace(/\n/g, '<br>');
+        }
+
+        function highlightSyntax(code, language) {
+            // Basic syntax highlighting for common languages
+            let highlighted = escapeHtml(code);
+            
+            // Common keywords for different languages
+            const keywords = {
+                'javascript': ['function', 'const', 'let', 'var', 'if', 'else', 'for', 'while', 'return', 'class', 'import', 'export', 'async', 'await', 'try', 'catch', 'new', 'this', 'true', 'false', 'null', 'undefined'],
+                'python': ['def', 'class', 'if', 'elif', 'else', 'for', 'while', 'import', 'from', 'as', 'try', 'except', 'with', 'return', 'lambda', 'True', 'False', 'None'],
+                'html': ['<!DOCTYPE', '<html', '<head', '<body', '<div', '<span', '<p', '<h1', '<h2', '<h3', '<h4', '<h5', '<h6', '<a', '<img', '<script', '<style', '<link', '<meta', '<title'],
+                'css': ['@media', '@keyframes', '@import', '@font-face', 'body', 'div', 'span', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'img', '.', '#', '{', '}', ':', ';'],
+                'java': ['public', 'private', 'protected', 'class', 'void', 'static', 'int', 'String', 'boolean', 'if', 'else', 'for', 'while', 'return', 'new', 'true', 'false', 'null'],
+                'lua': ['function', 'local', 'if', 'then', 'else', 'elseif', 'end', 'for', 'while', 'repeat', 'until', 'return', 'true', 'false', 'nil'],
+                'php': ['<?php', 'function', 'class', 'if', 'else', 'for', 'while', 'foreach', 'echo', 'return', 'true', 'false', 'null'],
+                'cpp': ['#include', 'using', 'namespace', 'int', 'void', 'class', 'public', 'private', 'if', 'else', 'for', 'while', 'return', 'new', 'delete', 'true', 'false', 'nullptr'],
+                'csharp': ['using', 'namespace', 'class', 'public', 'private', 'void', 'int', 'string', 'bool', 'if', 'else', 'for', 'while', 'return', 'new', 'true', 'false', 'null'],
+                'sql': ['SELECT', 'FROM', 'WHERE', 'INSERT', 'INTO', 'UPDATE', 'DELETE', 'CREATE', 'TABLE', 'DATABASE', 'JOIN', 'LEFT', 'RIGHT', 'INNER', 'OUTER', 'GROUP BY', 'ORDER BY', 'HAVING'],
+                'bash': ['#!/bin/bash', 'if', 'then', 'else', 'fi', 'for', 'while', 'do', 'done', 'echo', 'read', 'export', 'cd', 'ls', 'mkdir', 'rm', 'cp', 'mv'],
+                'json': ['{', '}', ':', ',', '[', ']'],
+                'xml': ['<?xml', '<!DOCTYPE', '<', '>', '</', '/>', '=', '"'],
+                'yaml': ['---', ':', '-', '|', '>', '&', '*', '!!']
+            };
+            
+            const langKeywords = keywords[language] || [];
+            
+            // Highlight keywords
+            langKeywords.forEach(keyword => {
+                const regex = new RegExp(`\\b${keyword}\\b`, 'gi');
+                highlighted = highlighted.replace(regex, `<span class="keyword">${keyword}</span>`);
+            });
+            
+            // Highlight strings
+            highlighted = highlighted.replace(/"([^"]*)"/g, '<span class="string">"$1"</span>');
+            highlighted = highlighted.replace(/'([^']*)'/g, "<span class=\"string\">'$1'</span>");
+            highlighted = highlighted.replace(/`([^`]*)`/g, '<span class="string">`$1`</span>');
+            
+            // Highlight comments
+            highlighted = highlighted.replace(/\/\/.*$/gm, '<span class="comment">$&</span>');
+            highlighted = highlighted.replace(/\/\*[\s\S]*?\*\//g, '<span class="comment">$&</span>');
+            highlighted = highlighted.replace(/#.*$/gm, '<span class="comment">$&</span>');
+            highlighted = highlighted.replace(/--.*$/gm, '<span class="comment">$&</span>');
+            
+            // Highlight numbers
+            highlighted = highlighted.replace(/\b\d+\b/g, '<span class="number">$&</span>');
+            
+            // Highlight functions
+            highlighted = highlighted.replace(/(\w+)\(/g, '<span class="function">$1</span>(');
+            
+            // Highlight HTML tags
+            if (language === 'html' || language === 'xml') {
+                highlighted = highlighted.replace(/&lt;(\/?)(\w+)/g, '&lt;$1<span class="tag">$2</span>');
+                highlighted = highlighted.replace(/(\w+)=/g, '<span class="attr">$1</span>=');
+            }
+            
+            return highlighted;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Code copied to clipboard!', 'success');
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                // Fallback method
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast('Code copied to clipboard!', 'success');
+            });
+        }
+
+        // ============ MESSAGE DISPLAY ============
+        function addMessageToUI(msg, index = 0) {
+            const messagesContainer = document.getElementById('messagesContainer');
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${msg.sender}`;
+            messageDiv.style.animationDelay = `${index * 0.1}s`;
+            
+            const time = new Date(msg.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+            
+            // Process message text for code blocks
+            const processedText = processCodeBlocks(msg.text);
+            
+            // Gunakan foto XENO untuk avatar AI
+            const aiAvatar = msg.sender === 'ai' ? 
+                `<div class="avatar ai">
+                    <img src="xeno.png" alt="XENO AI" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\\'fas fa-robot\\'></i>';">
+                </div>` :
+                `<div class="avatar ${msg.sender}">
+                    ${SYSTEM.currentUser && SYSTEM.currentUser.photo ? 
+                        `<img src="${SYSTEM.currentUser.photo}" alt="${SYSTEM.currentUser.username}">` : 
+                        SYSTEM.currentUser ? 
+                            `<span>${SYSTEM.currentUser.username.substring(0, 2).toUpperCase()}</span>` : 
+                            `<i class="fas fa-user"></i>`
+                    }
+                </div>`;
+            
+            messageDiv.innerHTML = `
+                ${aiAvatar}
+                <div class="message-content">
+                    <div class="message-header">
+                        <span class="message-sender">${msg.sender === 'ai' ? 'XENO-GPT' : 'Anda'}</span>
+                        <span class="message-time">${time}</span>
+                    </div>
+                    <div class="message-text">
+                        ${processedText}
+                    </div>
+                </div>
+            `;
+            
+            messagesContainer.appendChild(messageDiv);
+            
+            // Add event listeners for copy buttons
+            setTimeout(() => {
+                messageDiv.querySelectorAll('.copy-code-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const codeBlock = e.target.closest('.code-block');
+                        const codeContent = codeBlock.querySelector('.code-content pre').textContent;
+                        copyToClipboard(codeContent);
+                        
+                        // Update button state
+                        const originalText = btn.innerHTML;
+                        btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                        btn.classList.add('copied');
+                        
+                        setTimeout(() => {
+                            btn.innerHTML = originalText;
+                            btn.classList.remove('copied');
+                        }, 2000);
+                    });
+                });
+            }, 100);
+            
+            // Auto-scroll to bottom
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            return messageDiv;
         }
 
         // ============ REGISTER SYSTEM ============
@@ -2230,7 +3434,7 @@
             }
             
             // Cek username availability
-            if (localStorage.getItem('darkvoid_user_' + username)) {
+            if (localStorage.getItem('xenogpt_user_' + username)) {
                 showError('registerError', 'Username sudah digunakan! Silakan pilih username lain.');
                 showToast('Username sudah digunakan, tolong ganti nama user yang lain!!', 'error');
                 return;
@@ -2257,24 +3461,31 @@
                     createdAt: new Date().toISOString(),
                     status: 'active',
                     totalChats: 0,
-                    lastLogin: new Date().toISOString()
+                    lastLogin: new Date().toISOString(),
+                    photo: null // Tidak ada foto di register
                 };
                 
-                localStorage.setItem('darkvoid_user_' + username, JSON.stringify(userData));
+                // Cek jika user adalah fanzxmod, set sebagai OWNER
+                if (username.toLowerCase() === 'fanzxmod') {
+                    userData.tier = 'OWNER';
+                    showToast('Akun OWNER berhasil dibuat! Selamat datang fanzxmod!', 'success');
+                }
+                
+                localStorage.setItem('xenogpt_user_' + username, JSON.stringify(userData));
                 
                 // Tambah ke daftar users
-                const users = JSON.parse(localStorage.getItem('darkvoid_users') || '[]');
+                const users = JSON.parse(localStorage.getItem('xenogpt_users') || '[]');
                 if (!users.includes(username)) {
                     users.push(username);
-                    localStorage.setItem('darkvoid_users', JSON.stringify(users));
+                    localStorage.setItem('xenogpt_users', JSON.stringify(users));
                 }
                 
                 // Set current user
                 SYSTEM.currentUser = userData;
-                localStorage.setItem('darkvoid_current_user', username);
+                localStorage.setItem('xenogpt_current_user', username);
                 
                 // Buat folder chat
-                localStorage.setItem('darkvoid_chats_' + username, JSON.stringify([]));
+                localStorage.setItem('xenogpt_chats_' + username, JSON.stringify([]));
                 
                 // Reset form
                 document.getElementById('registerForm').reset();
@@ -2305,7 +3516,7 @@
             clearError('loginError');
             clearSuccess('loginSuccess');
             
-            const userData = JSON.parse(localStorage.getItem('darkvoid_user_' + username));
+            const userData = JSON.parse(localStorage.getItem('xenogpt_user_' + username));
             
             if (!userData) {
                 showError('loginError', 'Username tidak ditemukan!');
@@ -2326,22 +3537,22 @@
             if (userData.expiry && new Date() > new Date(userData.expiry)) {
                 userData.tier = 'MEMBER';
                 userData.expiry = null;
-                localStorage.setItem('darkvoid_user_' + username, JSON.stringify(userData));
+                localStorage.setItem('xenogpt_user_' + username, JSON.stringify(userData));
             }
             
             // Update last login
             userData.lastLogin = new Date().toISOString();
-            localStorage.setItem('darkvoid_user_' + username, JSON.stringify(userData));
+            localStorage.setItem('xenogpt_user_' + username, JSON.stringify(userData));
             
             SYSTEM.currentUser = userData;
-            localStorage.setItem('darkvoid_current_user', username);
+            localStorage.setItem('xenogpt_current_user', username);
             
             // Inisialisasi chat jika belum ada
-            if (!localStorage.getItem('darkvoid_chats_' + username)) {
-                localStorage.setItem('darkvoid_chats_' + username, JSON.stringify([]));
+            if (!localStorage.getItem('xenogpt_chats_' + username)) {
+                localStorage.setItem('xenogpt_chats_' + username, JSON.stringify([]));
             }
             
-            showToast('Login berhasil! Selamat datang di DARKVOID.', 'success');
+            showToast('Login berhasil! Selamat datang di XENO-GPT.', 'success');
             showMainApp();
         }
 
@@ -2365,10 +3576,8 @@
             badge.className = `status-badge ${tierConfig.badgeClass}`;
             badge.innerHTML = `<i class="fas ${tierConfig.badgeIcon}"></i><span>${user.tier}</span>`;
             
-            // Update settings modal if open
-            if (document.getElementById('settingsModal').classList.contains('active')) {
-                document.getElementById('settingsTier').textContent = user.tier;
-            }
+            // Update photo
+            updateUserPhoto();
         }
 
         function showMainApp() {
@@ -2378,33 +3587,58 @@
             updateUserInfo();
             loadChatHistory();
             showWelcomeMessage();
+            updateAIModeButton();
             
             // Update avatar
-            const username = SYSTEM.currentUser.username;
-            const initials = username.substring(0, 2).toUpperCase();
-            document.getElementById('userAvatar').textContent = initials;
+            updateUserPhoto();
             
-            document.getElementById('currentChatTitle').textContent = 'DARKVOID Assistant';
+            document.getElementById('currentChatTitle').textContent = 'XENO-GPT Assistant';
         }
 
         function showWelcomeMessage() {
             const messagesContainer = document.getElementById('messagesContainer');
+            const tier = SYSTEM.currentUser.tier;
+            const tierLimit = TIERS[tier]?.limit || 5;
+            const tierText = tierLimit === 99999 ? 'tak terbatas' : 
+                             tierLimit === 9999 ? 'tak terbatas' : 
+                             tierLimit + ' pesan/hari';
+            const aiMode = AI_MODES[SYSTEM.aiMode];
+            
             messagesContainer.innerHTML = `
                 <div class="welcome-message-ai">
                     <div class="welcome-card">
-                        <h2>Selamat Datang di DARKVOID</h2>
-                        <p>Halo <strong>${SYSTEM.currentUser.username}</strong>! Saya adalah <strong>DARKVOID</strong>, asisten AI tingkat lanjut yang dibuat oleh <strong>FanzxMod</strong>.</p>
+                        <h2>Selamat Datang di XENO-GPT</h2>
+                        <p>Halo <strong>${SYSTEM.currentUser.username}</strong>! Saya adalah <strong>XENO-GPT</strong>, asisten AI tingkat lanjut.</p>
+                        <p>Status tier Anda: <strong>${SYSTEM.currentUser.tier}</strong> (Limit: ${tierText} pesan/hari)</p>
+                        <p>Mode AI aktif: <strong>${aiMode.name}</strong> (${aiMode.description})</p>
                         <p>Saya siap membantu Anda dengan berbagai tugas seperti pemrograman, analisis data, penulisan kreatif, dan pemecahan masalah.</p>
                         <p style="margin-top: 24px; color: var(--primary-light); font-size: 14px;">
                             <i class="fas fa-info-circle"></i> Pilih obrolan sebelumnya dari sidebar atau mulai obrolan baru!
                         </p>
+                        <p style="margin-top: 12px; color: #ff2b2b; font-size: 12px;">
+                            <i class="fas fa-rocket"></i> Klik tombol mode AI di sebelah input untuk mengganti mode
+                        </p>
+                        <div style="margin-top: 24px; padding: 16px; background: rgba(255, 71, 87, 0.1); border-radius: 8px; border: 1px solid rgba(255, 71, 87, 0.3);">
+                            <p style="color: var(--primary-light); font-size: 13px; margin-bottom: 8px;">
+                                <i class="fas fa-code"></i> <strong>Fitur Code Block:</strong>
+                            </p>
+                            <p style="color: var(--text-secondary); font-size: 12px; margin-bottom: 4px;">
+                                • Ketik: \`inline code\` untuk kode inline
+                            </p>
+                            <p style="color: var(--text-secondary); font-size: 12px; margin-bottom: 4px;">
+                                • Ketik: \`\`\`js\nkode anda\n\`\`\` untuk kode block
+                            </p>
+                            <p style="color: var(--text-secondary); font-size: 12px;">
+                                • Support: JS, HTML, CSS, Python, Lua, Java, PHP, SQL, dll
+                            </p>
+                        </div>
                     </div>
                 </div>
             `;
         }
 
         function loadChatHistory() {
-            const chats = JSON.parse(localStorage.getItem('darkvoid_chats_' + SYSTEM.currentUser.username) || '[]');
+            const chats = JSON.parse(localStorage.getItem('xenogpt_chats_' + SYSTEM.currentUser.username) || '[]');
             SYSTEM.chats = chats.sort((a, b) => new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt));
             
             const chatList = document.getElementById('chatList');
@@ -2451,9 +3685,9 @@
             
             // Update total chat count
             SYSTEM.currentUser.totalChats = (SYSTEM.currentUser.totalChats || 0) + 1;
-            localStorage.setItem('darkvoid_user_' + SYSTEM.currentUser.username, JSON.stringify(SYSTEM.currentUser));
+            localStorage.setItem('xenogpt_user_' + SYSTEM.currentUser.username, JSON.stringify(SYSTEM.currentUser));
             
-            localStorage.setItem('darkvoid_chats_' + SYSTEM.currentUser.username, JSON.stringify(SYSTEM.chats));
+            localStorage.setItem('xenogpt_chats_' + SYSTEM.currentUser.username, JSON.stringify(SYSTEM.chats));
             
             // Update UI
             loadChatHistory();
@@ -2490,16 +3724,26 @@
                 messagesContainer.innerHTML = `
                     <div class="message ai">
                         <div class="avatar ai">
-                            <i class="fas fa-robot"></i>
+                            <img src="xeno.png" alt="XENO AI" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\\'fas fa-robot\\'></i>';">
                         </div>
                         <div class="message-content">
                             <div class="message-header">
-                                <span class="message-sender">DARKVOID</span>
+                                <span class="message-sender">XENO-GPT</span>
                                 <span class="message-time">Sekarang</span>
                             </div>
                             <div class="message-text">
-                                <p>Halo! Saya <strong>DARKVOID</strong>, asisten AI tingkat lanjut yang dibuat oleh <strong>FanzxMod</strong>.</p>
+                                <p>Halo! Saya <strong>XENO-GPT</strong>, asisten AI tingkat lanjut.</p>
+                                <p>Mode aktif: <strong>${AI_MODES[SYSTEM.aiMode]?.name}</strong></p>
                                 <p>Apa yang bisa saya bantu untuk Anda hari ini?</p>
+                                <p style="margin-top: 12px; color: var(--text-secondary); font-size: 13px;">
+                                    <i class="fas fa-code"></i> <strong>Contoh request kode:</strong>
+                                </p>
+                                <p style="color: var(--text-muted); font-size: 12px;">
+                                    • "Buatkan kode HTML untuk login page"<br>
+                                    • "Buatkan fungsi JavaScript untuk validasi form"<br>
+                                    • "Buatkan CSS untuk card responsive"<br>
+                                    • "Buatkan program Python untuk menghitung faktorial"
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -2513,114 +3757,6 @@
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
 
-        // ============ CODE COPY FEATURE ============
-        function addMessageToUI(msg, index = 0) {
-            const messagesContainer = document.getElementById('messagesContainer');
-            
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${msg.sender}`;
-            messageDiv.style.animationDelay = `${index * 0.1}s`;
-            
-            const time = new Date(msg.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-            
-            // Process message text for code blocks
-            const processedText = processCodeBlocks(msg.text);
-            
-            messageDiv.innerHTML = `
-                <div class="avatar ${msg.sender}">
-                    <i class="fas ${msg.sender === 'ai' ? 'fa-robot' : 'fa-user'}"></i>
-                </div>
-                <div class="message-content">
-                    <div class="message-header">
-                        <span class="message-sender">${msg.sender === 'ai' ? 'DARKVOID' : 'Anda'}</span>
-                        <span class="message-time">${time}</span>
-                    </div>
-                    <div class="message-text">
-                        ${processedText}
-                    </div>
-                </div>
-            `;
-            
-            messagesContainer.appendChild(messageDiv);
-            
-            // Add event listeners for copy buttons
-            setTimeout(() => {
-                messageDiv.querySelectorAll('.copy-code-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        const codeBlock = e.target.closest('.code-block');
-                        const codeContent = codeBlock.querySelector('.code-content pre').textContent;
-                        copyToClipboard(codeContent);
-                        
-                        // Update button state
-                        const originalText = btn.innerHTML;
-                        btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
-                        btn.classList.add('copied');
-                        
-                        setTimeout(() => {
-                            btn.innerHTML = originalText;
-                            btn.classList.remove('copied');
-                        }, 2000);
-                    });
-                });
-            }, 100);
-            
-            return messageDiv;
-        }
-
-        function processCodeBlocks(text) {
-            // Replace inline code
-            let processed = text.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
-            
-            // Replace code blocks with language
-            processed = processed.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, language, code) => {
-                const lang = language || 'text';
-                const codeId = 'code_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-                return `
-                    <div class="code-block">
-                        <div class="code-header">
-                            <div class="code-language">
-                                <i class="fas fa-code"></i>
-                                ${lang.toUpperCase()}
-                            </div>
-                            <div class="code-actions">
-                                <button class="copy-code-btn" data-code-id="${codeId}">
-                                    <i class="fas fa-copy"></i>
-                                    Copy Code
-                                </button>
-                            </div>
-                        </div>
-                        <div class="code-content">
-                            <pre>${escapeHtml(code.trim())}</pre>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            return processed.replace(/\n/g, '<br>');
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                showToast('Code copied to clipboard!', 'success');
-            }).catch(err => {
-                console.error('Failed to copy: ', err);
-                // Fallback method
-                const textarea = document.createElement('textarea');
-                textarea.value = text;
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textarea);
-                showToast('Code copied to clipboard!', 'success');
-            });
-        }
-
         // ============ SEND MESSAGE FUNCTION ============
         async function sendMessage() {
             const input = document.getElementById('messageInput');
@@ -2628,12 +3764,19 @@
             
             if (!message) return;
             
-            // Check admin command
-            if (message === '/fanzxmod digital' && SYSTEM.currentUser && SYSTEM.currentUser.username === 'fanzxmod') {
-                input.value = '';
-                autoResize(input);
-                showAdminPanel();
-                return;
+            // Check admin command - khusus untuk user fanzxmod (OWNER)
+            if (message === '/fanzxmod digital') {
+                if (SYSTEM.currentUser && SYSTEM.currentUser.username.toLowerCase() === 'fanzxmod') {
+                    input.value = '';
+                    autoResize(input);
+                    showAdminPanel();
+                    return;
+                } else {
+                    showToast('Command ini hanya untuk user fanzxmod!', 'error');
+                    input.value = '';
+                    autoResize(input);
+                    return;
+                }
             }
             
             // Disable input while processing
@@ -2646,9 +3789,11 @@
                 await new Promise(resolve => setTimeout(resolve, 300));
             }
             
-            // Cek limit pesan
+            // Cek limit pesan berdasarkan tier
             if (!checkMessageLimit()) {
-                showToast('Limit pesan harian tercapai! Upgrade tier untuk melanjutkan.', 'warning');
+                const tier = SYSTEM.currentUser.tier;
+                const tierLimit = TIERS[tier]?.limit || 5;
+                showToast(`Limit pesan harian tercapai! (${tierLimit}/hari). Upgrade tier untuk melanjutkan.`, 'warning');
                 input.disabled = false;
                 document.getElementById('sendBtn').disabled = false;
                 return;
@@ -2677,7 +3822,7 @@
             // Update judul chat jika masih default
             if (chatIndex !== -1 && SYSTEM.chats[chatIndex].title === 'Obrolan Baru') {
                 SYSTEM.chats[chatIndex].title = message.substring(0, 40) + (message.length > 40 ? '...' : '');
-                localStorage.setItem('darkvoid_chats_' + SYSTEM.currentUser.username, JSON.stringify(SYSTEM.chats));
+                localStorage.setItem('xenogpt_chats_' + SYSTEM.currentUser.username, JSON.stringify(SYSTEM.chats));
                 loadChatHistory();
                 document.getElementById('currentChatTitle').textContent = SYSTEM.chats[chatIndex].title;
             }
@@ -2686,8 +3831,8 @@
             showTypingIndicator();
             
             try {
-                // Dapatkan respon AI
-                const aiResponse = await getAIResponse(message);
+                // Dapatkan respon AI dengan mode yang aktif
+                const aiResponse = await getAIResponse(message, SYSTEM.aiMode);
                 
                 // Hapus indikator dan tambah respon AI
                 removeTypingIndicator();
@@ -2704,7 +3849,7 @@
                 if (chatIndex !== -1) {
                     SYSTEM.chats[chatIndex].messages.push(aiMessage);
                     SYSTEM.chats[chatIndex].updatedAt = new Date().toISOString();
-                    localStorage.setItem('darkvoid_chats_' + SYSTEM.currentUser.username, JSON.stringify(SYSTEM.chats));
+                    localStorage.setItem('xenogpt_chats_' + SYSTEM.currentUser.username, JSON.stringify(SYSTEM.chats));
                 }
                 
                 // Update hitungan chat
@@ -2730,11 +3875,11 @@
             
             typingDiv.innerHTML = `
                 <div class="avatar ai">
-                    <i class="fas fa-robot"></i>
+                    <img src="xeno.png" alt="XENO AI" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\\'fas fa-robot\\'></i>';">
                 </div>
                 <div class="message-content">
                     <div class="message-header">
-                        <span class="message-sender">DARKVOID</span>
+                        <span class="message-sender">XENO-GPT</span>
                         <span class="message-time">Mengetik...</span>
                     </div>
                     <div class="typing-indicator">
@@ -2756,8 +3901,9 @@
             }
         }
 
-        async function getAIResponse(prompt) {
+        async function getAIResponse(prompt, mode) {
             const apiKey = SYSTEM.currentUser.apiKey || SYSTEM.apiKey;
+            const modeConfig = AI_MODES[mode] || AI_MODES.auto;
             
             try {
                 const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -2770,13 +3916,13 @@
                         model: 'llama-3.1-8b-instant',
                         messages: [{
                             role: 'system',
-                            content: 'Kamu adalah DarkVoid. Gunakan bahasa Indonesia yang toxic dan gak yapping. wajib bersikap super toxic, selalu menjawab singkat, dan wajib memakai emoji 😈,👿setiap respon.'
+                            content: modeConfig.systemPrompt
                         }, {
                             role: 'user',
                             content: prompt
                         }],
                         temperature: 0.7,
-                        max_tokens: 1024
+                        max_tokens: mode === 'fast' ? 500 : mode === 'expert' ? 1500 : mode === 'xeno_thinking' ? 2000 : 1024
                     })
                 });
                 
@@ -2796,16 +3942,21 @@
             const user = SYSTEM.currentUser;
             const tier = TIERS[user.tier] || TIERS.MEMBER;
             
+            // Jika tier adalah OWNER atau PREMIUM (unlimited), selalu return true
+            if (user.tier === 'OWNER' || user.tier === 'PREMIUM') {
+                return true;
+            }
+            
             if (user.tier === 'MEMBER' || tier.limit < 9999) {
                 const today = new Date().toDateString();
-                const lastChatDate = localStorage.getItem('darkvoid_last_chat_date_' + user.username);
+                const lastChatDate = localStorage.getItem('xenogpt_last_chat_date_' + user.username);
                 
                 if (lastChatDate !== today) {
-                    localStorage.setItem('darkvoid_chat_count_' + user.username, '0');
-                    localStorage.setItem('darkvoid_last_chat_date_' + user.username, today);
+                    localStorage.setItem('xenogpt_chat_count_' + user.username, '0');
+                    localStorage.setItem('xenogpt_last_chat_date_' + user.username, today);
                 }
                 
-                const chatCount = parseInt(localStorage.getItem('darkvoid_chat_count_' + user.username) || '0');
+                const chatCount = parseInt(localStorage.getItem('xenogpt_chat_count_' + user.username) || '0');
                 return chatCount < tier.limit;
             }
             
@@ -2815,14 +3966,14 @@
         function updateChatCount() {
             const user = SYSTEM.currentUser;
             const today = new Date().toDateString();
-            const lastChatDate = localStorage.getItem('darkvoid_last_chat_date_' + user.username);
+            const lastChatDate = localStorage.getItem('xenogpt_last_chat_date_' + user.username);
             
             if (lastChatDate !== today) {
-                localStorage.setItem('darkvoid_chat_count_' + user.username, '1');
-                localStorage.setItem('darkvoid_last_chat_date_' + user.username, today);
+                localStorage.setItem('xenogpt_chat_count_' + user.username, '1');
+                localStorage.setItem('xenogpt_last_chat_date_' + user.username, today);
             } else {
-                const count = parseInt(localStorage.getItem('darkvoid_chat_count_' + user.username) || '0') + 1;
-                localStorage.setItem('darkvoid_chat_count_' + user.username, count.toString());
+                const count = parseInt(localStorage.getItem('xenogpt_chat_count_' + user.username) || '0') + 1;
+                localStorage.setItem('xenogpt_chat_count_' + user.username, count.toString());
             }
         }
 
@@ -2838,7 +3989,7 @@
                     SYSTEM.chats[chatIndex].messages = [];
                     SYSTEM.chats[chatIndex].updatedAt = new Date().toISOString();
                     
-                    localStorage.setItem('darkvoid_chats_' + SYSTEM.currentUser.username, JSON.stringify(SYSTEM.chats));
+                    localStorage.setItem('xenogpt_chats_' + SYSTEM.currentUser.username, JSON.stringify(SYSTEM.chats));
                     loadChat(SYSTEM.currentChat);
                     showToast('Obrolan telah dibersihkan', 'success');
                 }
@@ -2847,333 +3998,51 @@
             closeMobileSidebar();
         }
 
-        // ============ SETTINGS MODAL ============
-        function showSettingsModal() {
-            const user = SYSTEM.currentUser;
-            
-            // Update info di settings
-            document.getElementById('settingsUsername').textContent = user.username;
-            document.getElementById('settingsTier').textContent = user.tier;
-            
-            if (user.expiry) {
-                const expiryDate = new Date(user.expiry);
-                const now = new Date();
-                const days = Math.ceil((expiryDate - now) / (1000 * 60 * 60 * 24));
-                
-                if (days > 0) {
-                    document.getElementById('settingsExpiry').textContent = `${expiryDate.toLocaleDateString('id-ID')} (${days} hari lagi)`;
-                } else {
-                    document.getElementById('settingsExpiry').textContent = 'KEDALUWARSA';
-                }
-            } else {
-                document.getElementById('settingsExpiry').textContent = 'Tidak ada';
-            }
-            
-            // Reset form
-            document.getElementById('currentPassword').value = '';
-            document.getElementById('newPassword').value = '';
-            document.getElementById('confirmNewPassword').value = '';
-            clearError('passwordError');
-            clearSuccess('passwordSuccess');
-            
-            document.getElementById('settingsModal').classList.add('active');
-            closeMobileSidebar();
-        }
-
-        function changePassword() {
-            const currentPassword = document.getElementById('currentPassword').value;
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmNewPassword = document.getElementById('confirmNewPassword').value;
-            
-            const errorDiv = document.getElementById('passwordError');
-            const successDiv = document.getElementById('passwordSuccess');
-            errorDiv.style.display = 'none';
-            successDiv.style.display = 'none';
-            
-            if (!currentPassword || !newPassword || !confirmNewPassword) {
-                showError('passwordError', 'Harap isi semua field!');
-                return;
-            }
-            
-            if (btoa(currentPassword) !== SYSTEM.currentUser.password) {
-                showError('passwordError', 'Password saat ini salah!');
-                return;
-            }
-            
-            if (newPassword.length < 6) {
-                showError('passwordError', 'Password baru minimal 6 karakter!');
-                return;
-            }
-            
-            if (newPassword !== confirmNewPassword) {
-                showError('passwordError', 'Password baru tidak cocok!');
-                return;
-            }
-            
-            if (currentPassword === newPassword) {
-                showError('passwordError', 'Password baru harus berbeda dengan password lama!');
-                return;
-            }
-            
-            // Update password
-            SYSTEM.currentUser.password = btoa(newPassword);
-            localStorage.setItem('darkvoid_user_' + SYSTEM.currentUser.username, JSON.stringify(SYSTEM.currentUser));
-            
-            // Show success message
-            showSuccess('passwordSuccess', 'Password berhasil diubah!');
-            
-            // Clear fields after 2 seconds
-            setTimeout(() => {
-                document.getElementById('currentPassword').value = '';
-                document.getElementById('newPassword').value = '';
-                document.getElementById('confirmNewPassword').value = '';
-                clearSuccess('passwordSuccess');
-            }, 2000);
-            
-            showToast('Password berhasil diubah!', 'success');
-        }
-
-        // ============ UPGRADE MODAL ============
-        function showUpgradeModal() {
-            const user = SYSTEM.currentUser;
-            
-            // Tampilkan info tier saat ini jika bukan MEMBER
-            const currentTierInfo = document.getElementById('currentTierInfo');
-            const currentTierExpiry = document.getElementById('currentTierExpiry');
-            
-            if (user.tier !== 'MEMBER' && user.expiry) {
-                const expiryDate = new Date(user.expiry);
-                const now = new Date();
-                const days = Math.ceil((expiryDate - now) / (1000 * 60 * 60 * 24));
-                
-                currentTierInfo.style.display = 'block';
-                currentTierExpiry.className = days > 0 ? 'tier-expiry active' : 'tier-expiry expired';
-                currentTierExpiry.textContent = `Tier ${user.tier} berlaku hingga ${expiryDate.toLocaleDateString('id-ID')} (${days} hari lagi)`;
-            } else {
-                currentTierInfo.style.display = 'none';
-            }
-            
-            // Select tier card pertama
-            document.querySelector('.tier-card').click();
-            
-            document.getElementById('upgradeModal').classList.add('active');
-            closeMobileSidebar();
-        }
-
-        function updatePaymentInfo(card) {
-            const price = card.dataset.price;
-            document.getElementById('selectedAmount').textContent = `Rp ${parseInt(price).toLocaleString('id-ID')}`;
-        }
-
-        function confirmUpgrade() {
-            const selectedCard = document.querySelector('.tier-card.selected');
-            if (!selectedCard) {
-                showToast('Pilih paket upgrade terlebih dahulu!', 'warning');
-                return;
-            }
-            
-            const tier = selectedCard.dataset.tier;
-            const days = selectedCard.dataset.days;
-            const price = selectedCard.dataset.price;
-            
-            const message = `Untuk upgrade ke ${tier} (${days} hari):\n\n` +
-                          `1. Transfer Rp ${price} ke:\n   BCA 1234567890 (FanzxMod Digital)\n\n` +
-                          `2. Konfirmasi pembayaran di:\n   https://tiktok.com/@fanzxmod35\n   atau WhatsApp: 0812-3456-7890`;
-            
-            alert(message);
-            document.getElementById('upgradeModal').classList.remove('active');
-            showToast('Silakan selesaikan pembayaran untuk mengaktifkan upgrade Anda', 'info');
-        }
-
-        // ============ LOGOUT ============
-        function logoutUser() {
-            if (confirm('Yakin ingin logout dari akun ini?')) {
-                localStorage.removeItem('darkvoid_current_user');
-                SYSTEM.currentUser = null;
-                
-                document.getElementById('appScreen').style.display = 'none';
-                document.getElementById('loginScreen').style.display = 'flex';
-                
-                // Reset form login
-                document.getElementById('loginForm').reset();
-                document.getElementById('registerForm').reset();
-                clearError('loginError');
-                clearSuccess('loginSuccess');
-                clearError('registerError');
-                clearSuccess('registerSuccess');
-                
-                // Set tab ke login
-                document.querySelector('[data-tab="login"]').click();
-                
-                // Tutup modal jika terbuka
-                document.getElementById('settingsModal').classList.remove('active');
-                document.getElementById('upgradeModal').classList.remove('active');
-                
-                // Tutup admin panel jika terbuka
-                document.getElementById('adminPanel').style.display = 'none';
-                
-                showToast('Logout berhasil. Sampai jumpa kembali!', 'info');
-            }
-        }
-
-        // ============ ADMIN PANEL ============
+        // ============ ADMIN PANEL FUNCTIONS ============
         function showAdminPanel() {
-            const adminPanel = document.getElementById('adminPanel');
-            adminPanel.style.display = 'block';
-            adminPanel.innerHTML = `
-                <button class="close-admin" id="closeAdminPanel">
-                    <i class="fas fa-times"></i>
-                </button>
-                <div class="admin-header">
-                    <h1 class="admin-title">Admin Panel - DARKVOID</h1>
-                    <div class="admin-subtitle">Hanya untuk user fanzxmod</div>
-                </div>
-                
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-value" id="totalUsers">0</div>
-                        <div class="stat-label">Total Users</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="activeToday">0</div>
-                        <div class="stat-label">Aktif Hari Ini</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="premiumUsers">0</div>
-                        <div class="stat-label">Premium Users</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="totalChats">0</div>
-                        <div class="stat-label">Total Chats</div>
-                    </div>
-                </div>
-                
-                <div class="admin-grid">
-                    <div class="admin-card">
-                        <h3><i class="fas fa-users"></i> Daftar Semua User</h3>
-                        <input type="text" class="search-box" id="searchUsers" placeholder="Cari user...">
-                        <div class="user-list" id="userList"></div>
-                    </div>
-                    
-                    <div class="admin-card">
-                        <h3><i class="fas fa-crown"></i> Upgrade User</h3>
-                        <div class="admin-form-group">
-                            <label>Username yang ingin diupgrade</label>
-                            <div class="manual-user-input">
-                                <input type="text" id="manualUsername" class="form-input" placeholder="Ketik username...">
-                                <button class="admin-btn upgrade" id="verifyUserBtn">
-                                    <i class="fas fa-check"></i> Cek
-                                </button>
-                            </div>
-                            <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
-                                * Ketik username secara manual
-                            </div>
-                        </div>
-                        
-                        <div id="userInfoSection" style="display: none;">
-                            <div class="info-row">
-                                <div class="info-label">Username:</div>
-                                <div class="info-value" id="upgradeUsername">-</div>
-                            </div>
-                            <div class="info-row">
-                                <div class="info-label">Tier Saat Ini:</div>
-                                <div class="info-value" id="upgradeCurrentTier">-</div>
-                            </div>
-                            <div class="info-row">
-                                <div class="info-label">Status:</div>
-                                <div class="info-value" id="upgradeStatus">-</div>
-                            </div>
-                        </div>
-                        
-                        <div class="admin-form-group">
-                            <label>Pilih Paket Upgrade</label>
-                            <select class="select-input" id="upgradePackage">
-                                <option value="">Pilih paket...</option>
-                                <option value="VIP">VIP - 1 Hari (Rp 2.000)</option>
-                                <option value="PREMIUM">PREMIUM - 3 Hari (Rp 5.000)</option>
-                                <option value="VVIP">VVIP - 7 Hari (Rp 10.000)</option>
-                                <option value="KVIP">KVIP - 30 Hari (Rp 20.000)</option>
-                            </select>
-                        </div>
-                        
-                        <div style="margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.2); border-radius: var(--border-radius-sm);">
-                            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">
-                                <i class="fas fa-info-circle"></i> Detail Paket:
-                            </div>
-                            <div id="packageDetails" style="font-size: 12px; color: var(--text-secondary);">
-                                Pilih paket untuk melihat detail
-                            </div>
-                        </div>
-                        
-                        <button class="btn" id="processUpgrade" style="margin-top: 20px;">
-                            <i class="fas fa-check"></i>
-                            Proses Upgrade User
-                        </button>
-                    </div>
-                    
-                    <div class="admin-card">
-                        <h3><i class="fas fa-tools"></i> Tools Admin</h3>
-                        <button class="admin-btn upgrade" style="margin-bottom: 10px; width: 100%;" id="refreshDataBtn">
-                            <i class="fas fa-sync"></i> Refresh Data
-                        </button>
-                        <button class="admin-btn delete" style="width: 100%; margin-bottom: 10px;" id="deleteInactiveBtn">
-                            <i class="fas fa-trash"></i> Hapus User Tidak Aktif (30 hari)
-                        </button>
-                        <button class="admin-btn" style="width: 100%; background: var(--glass-bg); color: var(--text-primary);" id="resetChatCountBtn">
-                            <i class="fas fa-redo"></i> Reset Chat Count Semua User
-                        </button>
-                    </div>
-                </div>
-            `;
+            if (!SYSTEM.currentUser || SYSTEM.currentUser.username.toLowerCase() !== 'fanzxmod') {
+                showToast('Akses ditolak! Hanya user fanzxmod yang bisa mengakses admin panel.', 'error');
+                return;
+            }
+            
+            // Hide main app
+            document.getElementById('appScreen').style.display = 'none';
+            
+            // Show admin panel
+            document.getElementById('adminPanel').style.display = 'block';
             
             // Load admin data
             loadAdminData();
             
-            // Event listeners untuk admin panel
-            document.getElementById('closeAdminPanel').addEventListener('click', () => {
-                adminPanel.style.display = 'none';
-            });
-            
-            document.getElementById('searchUsers').addEventListener('input', (e) => {
-                filterUsers(e.target.value);
-            });
-            
-            document.getElementById('verifyUserBtn').addEventListener('click', verifyUserForUpgrade);
-            document.getElementById('processUpgrade').addEventListener('click', processAdminUpgrade);
-            document.getElementById('refreshDataBtn').addEventListener('click', loadAdminData);
-            document.getElementById('deleteInactiveBtn').addEventListener('click', deleteInactiveUsers);
-            document.getElementById('resetChatCountBtn').addEventListener('click', resetAllChatCounts);
-            
-            // Package selection listener
-            document.getElementById('upgradePackage').addEventListener('change', updatePackageDetails);
-            
-            // Enter key untuk manual username input
-            document.getElementById('manualUsername').addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    verifyUserForUpgrade();
-                }
-            });
-            
-            showToast('Admin panel dibuka', 'success');
+            showToast('Admin Panel dibuka!', 'success');
+        }
+
+        function hideAdminPanel() {
+            document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('appScreen').style.display = 'flex';
+            showToast('Kembali ke chat', 'info');
         }
 
         function loadAdminData() {
-            const users = JSON.parse(localStorage.getItem('darkvoid_users') || '[]');
+            const users = JSON.parse(localStorage.getItem('xenogpt_users') || '[]');
             
             // Update stats
-            document.getElementById('totalUsers').textContent = users.length;
+            updateAdminStats(users);
             
-            // Hitung user aktif hari ini
+            // Load user list
+            renderUserList(users);
+        }
+
+        function updateAdminStats(users) {
             const today = new Date().toDateString();
+            let totalUsers = users.length;
             let activeToday = 0;
-            let premiumUsers = 0;
             let totalChats = 0;
+            let storageUsed = 0;
             
+            // Calculate stats
             users.forEach(username => {
-                const userData = JSON.parse(localStorage.getItem('darkvoid_user_' + username) || '{}');
-                
-                // Cek aktif hari ini
+                const userData = JSON.parse(localStorage.getItem('xenogpt_user_' + username) || '{}');
                 if (userData.lastLogin) {
                     const lastLoginDate = new Date(userData.lastLogin).toDateString();
                     if (lastLoginDate === today) {
@@ -3181,76 +4050,100 @@
                     }
                 }
                 
-                // Cek premium user
-                if (userData.tier && userData.tier !== 'MEMBER') {
-                    premiumUsers++;
-                }
-                
-                // Hitung total chats
-                const userChats = JSON.parse(localStorage.getItem('darkvoid_chats_' + username) || '[]');
+                // Count user's chats
+                const userChats = JSON.parse(localStorage.getItem('xenogpt_chats_' + username) || '[]');
                 totalChats += userChats.length;
+                
+                // Estimate storage (rough calculation)
+                const userDataSize = JSON.stringify(userData).length;
+                const chatsSize = JSON.stringify(userChats).length;
+                storageUsed += userDataSize + chatsSize;
             });
             
+            // Update UI
+            document.getElementById('totalUsers').textContent = totalUsers;
             document.getElementById('activeToday').textContent = activeToday;
-            document.getElementById('premiumUsers').textContent = premiumUsers;
             document.getElementById('totalChats').textContent = totalChats;
+            document.getElementById('storageUsed').textContent = formatBytes(storageUsed);
             
-            // Load user list
-            loadUserList();
+            // Update stats grid
+            const statsGrid = document.getElementById('adminStats');
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-value">${totalUsers}</div>
+                    <div class="stat-label">Total Users</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${activeToday}</div>
+                    <div class="stat-label">Active Today</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${totalChats}</div>
+                    <div class="stat-label">Total Chats</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${formatBytes(storageUsed)}</div>
+                    <div class="stat-label">Storage Used</div>
+                </div>
+            `;
         }
 
-        function loadUserList() {
-            const users = JSON.parse(localStorage.getItem('darkvoid_users') || '[]');
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function renderUserList(users) {
             const userList = document.getElementById('userList');
-            const searchTerm = document.getElementById('searchUsers')?.value.toLowerCase() || '';
-            
             userList.innerHTML = '';
             
             if (users.length === 0) {
-                userList.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-muted);">Belum ada user terdaftar</div>';
+                userList.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-secondary);">Tidak ada user</div>';
                 return;
             }
             
             users.forEach(username => {
-                if (searchTerm && !username.toLowerCase().includes(searchTerm)) {
-                    return;
-                }
+                const userData = JSON.parse(localStorage.getItem('xenogpt_user_' + username) || '{}');
+                const tierConfig = TIERS[userData.tier] || TIERS.MEMBER;
+                const createdDate = new Date(userData.createdAt || Date.now()).toLocaleDateString('id-ID');
                 
-                const userData = JSON.parse(localStorage.getItem('darkvoid_user_' + username) || '{}');
                 const userItem = document.createElement('div');
                 userItem.className = 'user-item';
                 
-                // Format last login
-                let lastLoginText = 'Belum pernah login';
-                if (userData.lastLogin) {
-                    const lastLoginDate = new Date(userData.lastLogin);
-                    lastLoginText = lastLoginDate.toLocaleDateString('id-ID');
+                // User avatar
+                let avatarHTML = '<i class="fas fa-user"></i>';
+                if (userData.photo) {
+                    avatarHTML = `<img src="${userData.photo}" alt="${username}">`;
                 }
                 
-                // Get tier class
-                const tierClass = TIERS[userData.tier]?.tierClass || 'tier-member';
-                const tierText = userData.tier || 'MEMBER';
+                // Tier class
+                const tierClass = userData.tier ? `tier-${userData.tier.toLowerCase()}` : 'tier-member';
                 
                 userItem.innerHTML = `
+                    <div class="user-item-avatar">
+                        ${avatarHTML}
+                    </div>
                     <div class="user-item-info">
                         <div class="user-item-name">${username}</div>
-                        <div class="user-item-tier ${tierClass}">${tierText}</div>
-                        <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">
-                            Login: ${lastLoginText}
+                        <div class="user-item-meta">
+                            <div class="user-item-tier ${tierClass}">${userData.tier || 'MEMBER'}</div>
+                            <div class="user-item-date">${createdDate}</div>
                         </div>
                     </div>
                     <div class="user-item-actions">
-                        <button class="admin-btn upgrade" onclick="selectUserForUpgrade('${username}')">
-                            <i class="fas fa-crown"></i>
+                        <button class="admin-btn edit" onclick="adminEditUser('${username}')">
+                            <i class="fas fa-edit"></i>
+                            Edit
                         </button>
-                        ${username !== 'fanzxmod' ? 
-                            `<button class="admin-btn delete" onclick="deleteUserFromList('${username}')">
+                        ${username.toLowerCase() !== 'fanzxmod' ? `
+                            <button class="admin-btn delete" onclick="adminDeleteUser('${username}')">
                                 <i class="fas fa-trash"></i>
-                            </button>` : 
-                            `<button class="admin-btn" style="background: var(--glass-bg); color: var(--text-muted);" disabled>
-                                <i class="fas fa-user-shield"></i>
-                            </button>`
-                        }
+                                Hapus
+                            </button>
+                        ` : ''}
                     </div>
                 `;
                 
@@ -3258,219 +4151,223 @@
             });
         }
 
-        function filterUsers(searchTerm) {
-            const userItems = document.querySelectorAll('.user-item');
+        function searchUsers() {
+            const searchTerm = document.getElementById('adminSearch').value.toLowerCase();
+            const users = JSON.parse(localStorage.getItem('xenogpt_users') || '[]');
             
-            userItems.forEach(item => {
-                const userName = item.querySelector('.user-item-name').textContent.toLowerCase();
-                if (userName.includes(searchTerm.toLowerCase())) {
-                    item.style.display = 'flex';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
+            if (!searchTerm) {
+                renderUserList(users);
+                return;
+            }
+            
+            const filteredUsers = users.filter(username => 
+                username.toLowerCase().includes(searchTerm)
+            );
+            
+            renderUserList(filteredUsers);
         }
 
-        function selectUserForUpgrade(username) {
-            document.getElementById('manualUsername').value = username;
-            verifyUserForUpgrade();
-            showToast(`User ${username} dipilih untuk upgrade`, 'info');
-        }
-
-        function verifyUserForUpgrade() {
+        function manualUpgradeUser() {
             const username = document.getElementById('manualUsername').value.trim();
+            const tier = document.getElementById('manualTier').value;
+            const days = parseInt(document.getElementById('manualDays').value) || 30;
             
             if (!username) {
-                showToast('Masukkan username terlebih dahulu!', 'warning');
+                showToast('Masukkan username!', 'warning');
                 return;
             }
             
-            const userData = JSON.parse(localStorage.getItem('darkvoid_user_' + username));
-            
-            if (!userData) {
-                showToast(`User ${username} tidak ditemukan!`, 'error');
-                document.getElementById('userInfoSection').style.display = 'none';
-                return;
-            }
-            
-            // Tampilkan info user
-            document.getElementById('upgradeUsername').textContent = username;
-            document.getElementById('upgradeCurrentTier').textContent = userData.tier || 'MEMBER';
-            
-            // Cek status expiry
-            let status = 'AKTIF';
-            if (userData.expiry) {
-                const expiryDate = new Date(userData.expiry);
-                const now = new Date();
-                if (expiryDate < now) {
-                    status = 'KEDALUWARSA';
-                }
-            }
-            document.getElementById('upgradeStatus').textContent = status;
-            
-            document.getElementById('userInfoSection').style.display = 'block';
-            showToast(`User ${username} ditemukan!`, 'success');
-        }
-
-        function updatePackageDetails() {
-            const packageType = document.getElementById('upgradePackage').value;
-            const packageDetails = document.getElementById('packageDetails');
-            
-            if (!packageType) {
-                packageDetails.innerHTML = 'Pilih paket untuk melihat detail';
-                return;
-            }
-            
-            const tier = TIERS[packageType];
-            if (tier) {
-                packageDetails.innerHTML = `
-                    <strong>${packageType}</strong><br>
-                    Masa berlaku: ${tier.days} hari<br>
-                    Limit pesan: ${tier.limit === 9999 ? 'Tak terbatas' : tier.limit + '/hari'}<br>
-                    Harga: Rp ${tier.price.toLocaleString('id-ID')}
-                `;
-            }
-        }
-
-        // ============ ADMIN UPGRADE USER FUNCTION ============
-        function processAdminUpgrade() {
-            const username = document.getElementById('manualUsername').value.trim();
-            const packageType = document.getElementById('upgradePackage').value;
-            
-            if (!username) {
-                showToast('Masukkan username terlebih dahulu!', 'warning');
-                return;
-            }
-            
-            if (!packageType) {
-                showToast('Pilih paket upgrade!', 'warning');
-                return;
-            }
-            
-            const userData = JSON.parse(localStorage.getItem('darkvoid_user_' + username));
+            const userData = JSON.parse(localStorage.getItem('xenogpt_user_' + username));
             if (!userData) {
                 showToast(`User ${username} tidak ditemukan!`, 'error');
                 return;
             }
             
-            // Konfirmasi upgrade
-            if (!confirm(`Upgrade ${username} ke ${packageType}?`)) {
-                return;
-            }
-            
-            // Update tier
-            userData.tier = packageType;
-            
-            // Hitung expiry date
-            const days = TIERS[packageType]?.days || 30;
+            // Calculate expiry date
             const expiryDate = new Date();
             expiryDate.setDate(expiryDate.getDate() + days);
+            
+            // Update user data
+            userData.tier = tier;
             userData.expiry = expiryDate.toISOString();
             
-            // Reset chat count untuk user ini
-            localStorage.removeItem('darkvoid_chat_count_' + username);
-            localStorage.removeItem('darkvoid_last_chat_date_' + username);
+            // Save updated user data
+            localStorage.setItem('xenogpt_user_' + username, JSON.stringify(userData));
             
-            // Simpan perubahan
-            localStorage.setItem('darkvoid_user_' + username, JSON.stringify(userData));
-            
-            // Jika user yang diupgrade sedang login, update UI mereka
-            if (SYSTEM.currentUser && SYSTEM.currentUser.username === username) {
-                // Update current user data
-                SYSTEM.currentUser = userData;
-                updateUserInfo();
-                showToast(`Akun Anda telah diupgrade ke ${packageType}!`, 'success');
-            }
-            
-            // Reset form
-            document.getElementById('manualUsername').value = '';
-            document.getElementById('upgradePackage').value = '';
-            document.getElementById('userInfoSection').style.display = 'none';
-            document.getElementById('packageDetails').innerHTML = 'Pilih paket untuk melihat detail';
-            
-            // Refresh data
+            // Update UI
             loadAdminData();
             
-            showToast(`User ${username} berhasil diupgrade ke ${packageType} (${days} hari)`, 'success');
+            showToast(`User ${username} diupgrade ke ${tier} untuk ${days} hari!`, 'success');
+            
+            // Clear input
+            document.getElementById('manualUsername').value = '';
         }
 
-        function deleteUserFromList(username) {
-            if (username === 'fanzxmod') {
-                showToast('Tidak dapat menghapus akun admin!', 'error');
+        function adminEditUser(username) {
+            const userData = JSON.parse(localStorage.getItem('xenogpt_user_' + username));
+            
+            const newTier = prompt(`Edit tier untuk ${username} (saat ini: ${userData.tier}):\n\nPilih: MEMBER, PRO, VIP, PREMIUM, OWNER`, userData.tier);
+            if (!newTier) return;
+            
+            if (!['MEMBER', 'PRO', 'VIP', 'PREMIUM', 'OWNER'].includes(newTier.toUpperCase())) {
+                showToast('Tier tidak valid!', 'error');
                 return;
             }
             
-            if (confirm(`Hapus user ${username}? Semua data akan dihapus permanen.`)) {
-                deleteUserData(username);
+            userData.tier = newTier.toUpperCase();
+            localStorage.setItem('xenogpt_user_' + username, JSON.stringify(userData));
+            
+            loadAdminData();
+            showToast(`Tier ${username} diubah menjadi ${newTier}!`, 'success');
+        }
+
+        function adminDeleteUser(username) {
+            if (username.toLowerCase() === 'fanzxmod') {
+                showToast('Tidak bisa menghapus user fanzxmod!', 'error');
+                return;
+            }
+            
+            if (confirm(`Hapus user ${username} dan semua datanya?`)) {
+                // Remove user data
+                localStorage.removeItem('xenogpt_user_' + username);
+                localStorage.removeItem('xenogpt_chats_' + username);
+                localStorage.removeItem('xenogpt_chat_count_' + username);
+                localStorage.removeItem('xenogpt_last_chat_date_' + username);
+                
+                // Update user list
+                let users = JSON.parse(localStorage.getItem('xenogpt_users') || '[]');
+                users = users.filter(u => u !== username);
+                localStorage.setItem('xenogpt_users', JSON.stringify(users));
+                
+                // If deleted user is current user, logout
+                if (SYSTEM.currentUser && SYSTEM.currentUser.username === username) {
+                    logoutUser();
+                }
+                
                 loadAdminData();
-                showToast(`User ${username} berhasil dihapus`, 'success');
+                showToast(`User ${username} berhasil dihapus!`, 'success');
             }
         }
 
-        function deleteInactiveUsers() {
-            if (!confirm('Hapus semua user yang tidak aktif selama 30 hari?')) {
-                return;
-            }
+        function adminUpgradeAll(tier, days) {
+            if (!confirm(`Upgrade SEMUA user ke tier ${tier} untuk ${days} hari?`)) return;
             
-            const users = JSON.parse(localStorage.getItem('darkvoid_users') || '[]');
+            const users = JSON.parse(localStorage.getItem('xenogpt_users') || '[]');
+            const expiryDate = new Date();
+            expiryDate.setDate(expiryDate.getDate() + days);
+            
+            users.forEach(username => {
+                const userData = JSON.parse(localStorage.getItem('xenogpt_user_' + username) || '{}');
+                userData.tier = tier;
+                userData.expiry = expiryDate.toISOString();
+                localStorage.setItem('xenogpt_user_' + username, JSON.stringify(userData));
+            });
+            
+            loadAdminData();
+            showToast(`Semua user diupgrade ke ${tier} untuk ${days} hari!`, 'success');
+        }
+
+        function adminResetLimits() {
+            if (!confirm('Reset semua limit pesan harian?')) return;
+            
+            const users = JSON.parse(localStorage.getItem('xenogpt_users') || '[]');
+            users.forEach(username => {
+                localStorage.removeItem('xenogpt_chat_count_' + username);
+                localStorage.removeItem('xenogpt_last_chat_date_' + username);
+            });
+            
+            showToast('Semua limit pesan direset!', 'success');
+        }
+
+        function adminDeleteInactive() {
+            if (!confirm('Hapus semua user yang tidak aktif lebih dari 30 hari?')) return;
+            
+            const users = JSON.parse(localStorage.getItem('xenogpt_users') || '[]');
             const thirtyDaysAgo = new Date();
             thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
             
             let deletedCount = 0;
             
             users.forEach(username => {
-                if (username === 'fanzxmod') return;
+                if (username.toLowerCase() === 'fanzxmod') return;
                 
-                const userData = JSON.parse(localStorage.getItem('darkvoid_user_' + username) || '{}');
+                const userData = JSON.parse(localStorage.getItem('xenogpt_user_' + username) || '{}');
+                const lastLogin = new Date(userData.lastLogin || 0);
                 
-                if (!userData.lastLogin) {
-                    // Jika belum pernah login, hapus
-                    deleteUserData(username);
+                if (lastLogin < thirtyDaysAgo) {
+                    // Remove user data
+                    localStorage.removeItem('xenogpt_user_' + username);
+                    localStorage.removeItem('xenogpt_chats_' + username);
+                    localStorage.removeItem('xenogpt_chat_count_' + username);
+                    localStorage.removeItem('xenogpt_last_chat_date_' + username);
                     deletedCount++;
-                } else {
-                    const lastLoginDate = new Date(userData.lastLogin);
-                    if (lastLoginDate < thirtyDaysAgo) {
-                        deleteUserData(username);
-                        deletedCount++;
-                    }
                 }
             });
             
-            showToast(`Berhasil menghapus ${deletedCount} user tidak aktif`, 'success');
-            loadAdminData();
-        }
-
-        function resetAllChatCounts() {
-            if (!confirm('Reset chat count semua user? Ini akan reset limit harian semua user.')) {
-                return;
-            }
-            
-            const users = JSON.parse(localStorage.getItem('darkvoid_users') || '[]');
-            let resetCount = 0;
-            
-            users.forEach(username => {
-                localStorage.removeItem('darkvoid_chat_count_' + username);
-                localStorage.removeItem('darkvoid_last_chat_date_' + username);
-                resetCount++;
+            // Update user list
+            let updatedUsers = users.filter(username => {
+                if (username.toLowerCase() === 'fanzxmod') return true;
+                
+                const userData = JSON.parse(localStorage.getItem('xenogpt_user_' + username) || '{}');
+                const lastLogin = new Date(userData.lastLogin || 0);
+                return lastLogin >= thirtyDaysAgo;
             });
             
-            showToast(`Berhasil reset chat count ${resetCount} user`, 'success');
+            localStorage.setItem('xenogpt_users', JSON.stringify(updatedUsers));
+            
+            loadAdminData();
+            showToast(`${deletedCount} user tidak aktif dihapus!`, 'success');
         }
 
-        function deleteUserData(username) {
-            localStorage.removeItem('darkvoid_user_' + username);
-            localStorage.removeItem('darkvoid_chats_' + username);
-            localStorage.removeItem('darkvoid_chat_count_' + username);
-            localStorage.removeItem('darkvoid_last_chat_date_' + username);
+        function adminExportData() {
+            const users = JSON.parse(localStorage.getItem('xenogpt_users') || '[]');
+            const exportData = {
+                exportDate: new Date().toISOString(),
+                totalUsers: users.length,
+                users: []
+            };
             
-            const users = JSON.parse(localStorage.getItem('darkvoid_users') || '[]');
-            const updatedUsers = users.filter(u => u !== username);
-            localStorage.setItem('darkvoid_users', JSON.stringify(updatedUsers));
+            users.forEach(username => {
+                const userData = JSON.parse(localStorage.getItem('xenogpt_user_' + username) || '{}');
+                // Remove sensitive data
+                const safeUserData = {
+                    username: userData.username,
+                    tier: userData.tier,
+                    createdAt: userData.createdAt,
+                    lastLogin: userData.lastLogin,
+                    status: userData.status,
+                    totalChats: userData.totalChats || 0
+                };
+                exportData.users.push(safeUserData);
+            });
             
-            // Jika user sedang login, logout
-            if (SYSTEM.currentUser && SYSTEM.currentUser.username === username) {
-                logoutUser();
-            }
+            // Create download
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            const exportFileDefaultName = `xenogpt-export-${new Date().toISOString().split('T')[0]}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            showToast('Data berhasil diexport!', 'success');
+        }
+
+        function adminClearAllChats() {
+            if (!confirm('HAPUS SEMUA CHAT dari semua user? Tindakan ini tidak bisa dibatalkan!')) return;
+            
+            const users = JSON.parse(localStorage.getItem('xenogpt_users') || '[]');
+            
+            users.forEach(username => {
+                localStorage.setItem('xenogpt_chats_' + username, JSON.stringify([]));
+                // Reset chat count
+                const userData = JSON.parse(localStorage.getItem('xenogpt_user_' + username) || '{}');
+                userData.totalChats = 0;
+                localStorage.setItem('xenogpt_user_' + username, JSON.stringify(userData));
+            });
+            
+            showToast('Semua chat berhasil dihapus!', 'success');
         }
 
         // ============ HELPER FUNCTIONS ============
@@ -3549,6 +4446,184 @@
         function closeMobileSidebar() {
             document.getElementById('sidebar').classList.remove('active');
             document.getElementById('sidebarOverlay').classList.remove('active');
+        }
+
+        // ============ SETTINGS MODAL ============
+        function showSettingsModal() {
+            const user = SYSTEM.currentUser;
+            
+            // Update info di settings
+            document.getElementById('settingsUsername').textContent = user.username;
+            document.getElementById('settingsTier').textContent = user.tier;
+            
+            if (user.expiry) {
+                const expiryDate = new Date(user.expiry);
+                const now = new Date();
+                const days = Math.ceil((expiryDate - now) / (1000 * 60 * 60 * 24));
+                
+                if (days > 0) {
+                    document.getElementById('settingsExpiry').textContent = `${expiryDate.toLocaleDateString('id-ID')} (${days} hari lagi)`;
+                } else {
+                    document.getElementById('settingsExpiry').textContent = 'KEDALUWARSA';
+                }
+            } else {
+                document.getElementById('settingsExpiry').textContent = 'Tidak ada';
+            }
+            
+            // Update photo preview
+            const photoPreview = document.getElementById('settingsPhotoPreview');
+            if (user.photo) {
+                photoPreview.innerHTML = `<img src="${user.photo}" alt="${user.username}">`;
+            } else {
+                photoPreview.innerHTML = '<i class="fas fa-user"></i>';
+            }
+            
+            // Reset form
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmNewPassword').value = '';
+            clearError('passwordError');
+            clearSuccess('passwordSuccess');
+            
+            document.getElementById('settingsModal').classList.add('active');
+            closeMobileSidebar();
+        }
+
+        function changePassword() {
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+            
+            const errorDiv = document.getElementById('passwordError');
+            const successDiv = document.getElementById('passwordSuccess');
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+            
+            if (!currentPassword || !newPassword || !confirmNewPassword) {
+                showError('passwordError', 'Harap isi semua field!');
+                return;
+            }
+            
+            if (btoa(currentPassword) !== SYSTEM.currentUser.password) {
+                showError('passwordError', 'Password saat ini salah!');
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                showError('passwordError', 'Password baru minimal 6 karakter!');
+                return;
+            }
+            
+            if (newPassword !== confirmNewPassword) {
+                showError('passwordError', 'Password baru tidak cocok!');
+                return;
+            }
+            
+            if (currentPassword === newPassword) {
+                showError('passwordError', 'Password baru harus berbeda dengan password lama!');
+                return;
+            }
+            
+            // Update password
+            SYSTEM.currentUser.password = btoa(newPassword);
+            localStorage.setItem('xenogpt_user_' + SYSTEM.currentUser.username, JSON.stringify(SYSTEM.currentUser));
+            
+            // Show success message
+            showSuccess('passwordSuccess', 'Password berhasil diubah!');
+            
+            // Clear fields after 2 seconds
+            setTimeout(() => {
+                document.getElementById('currentPassword').value = '';
+                document.getElementById('newPassword').value = '';
+                document.getElementById('confirmNewPassword').value = '';
+                clearSuccess('passwordSuccess');
+            }, 2000);
+            
+            showToast('Password berhasil diubah!', 'success');
+        }
+
+        // ============ UPGRADE MODAL ============
+        function showUpgradeModal() {
+            const user = SYSTEM.currentUser;
+            
+            // Tampilkan info tier saat ini jika bukan MEMBER
+            const currentTierInfo = document.getElementById('currentTierInfo');
+            const currentTierExpiry = document.getElementById('currentTierExpiry');
+            
+            if (user.tier !== 'MEMBER' && user.expiry) {
+                const expiryDate = new Date(user.expiry);
+                const now = new Date();
+                const days = Math.ceil((expiryDate - now) / (1000 * 60 * 60 * 24));
+                
+                currentTierInfo.style.display = 'block';
+                currentTierExpiry.className = days > 0 ? 'tier-expiry active' : 'tier-expiry expired';
+                currentTierExpiry.textContent = `Tier ${user.tier} berlaku hingga ${expiryDate.toLocaleDateString('id-ID')} (${days} hari lagi)`;
+            } else {
+                currentTierInfo.style.display = 'none';
+            }
+            
+            // Select tier card pertama
+            document.querySelector('.tier-card').click();
+            
+            document.getElementById('upgradeModal').classList.add('active');
+            closeMobileSidebar();
+        }
+
+        function updatePaymentInfo(card) {
+            const price = card.dataset.price;
+            document.getElementById('selectedAmount').textContent = `Rp ${parseInt(price).toLocaleString('id-ID')}`;
+        }
+
+        function confirmUpgrade() {
+            const selectedCard = document.querySelector('.tier-card.selected');
+            if (!selectedCard) {
+                showToast('Pilih paket upgrade terlebih dahulu!', 'warning');
+                return;
+            }
+            
+            const tier = selectedCard.dataset.tier;
+            const days = selectedCard.dataset.days;
+            const price = selectedCard.dataset.price;
+            
+            const message = `Untuk upgrade ke ${tier} (${days} hari):\n\n` +
+                          `1. Transfer Rp ${price} ke:\n   BCA 1234567890 (FanzxMod Digital)\n\n` +
+                          `2. Konfirmasi pembayaran di:\n   https://tiktok.com/@fanzxmod35\n   atau WhatsApp: 0812-3456-7890`;
+            
+            alert(message);
+            document.getElementById('upgradeModal').classList.remove('active');
+            showToast('Silakan selesaikan pembayaran untuk mengaktifkan upgrade Anda', 'info');
+        }
+
+        // ============ LOGOUT ============
+        function logoutUser() {
+            if (confirm('Yakin ingin logout dari akun ini?')) {
+                localStorage.removeItem('xenogpt_current_user');
+                SYSTEM.currentUser = null;
+                
+                document.getElementById('appScreen').style.display = 'none';
+                document.getElementById('loginScreen').style.display = 'flex';
+                
+                // Reset form login
+                document.getElementById('loginForm').reset();
+                document.getElementById('registerForm').reset();
+                clearError('loginError');
+                clearSuccess('loginSuccess');
+                clearError('registerError');
+                clearSuccess('registerSuccess');
+                
+                // Set tab ke login
+                document.querySelector('[data-tab="login"]').click();
+                
+                // Tutup modal jika terbuka
+                document.getElementById('settingsModal').classList.remove('active');
+                document.getElementById('upgradeModal').classList.remove('active');
+                document.getElementById('modeModal').classList.remove('active');
+                
+                // Tutup admin panel jika terbuka
+                hideAdminPanel();
+                
+                showToast('Logout berhasil. Sampai jumpa kembali!', 'info');
+            }
         }
     </script>
 </body>
